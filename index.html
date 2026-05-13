@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MicroCAD</title>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #1a1d23;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOOLBAR ───────────────────────────────────────────── */
+    #toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 16px;
+      height: 52px;
+      background: #22262f;
+      border-bottom: 1px solid #2e3340;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    #toolbar .brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: #7eb8f7;
+      letter-spacing: .04em;
+      margin-right: 12px;
+      white-space: nowrap;
+    }
+
+    .sep {
+      width: 1px;
+      height: 28px;
+      background: #2e3340;
+      margin: 0 6px;
+      flex-shrink: 0;
+    }
+
+    .tool-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      width: 54px;
+      height: 42px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: #8a93a8;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .03em;
+      transition: background .12s, color .12s;
+      flex-shrink: 0;
+    }
+
+    .tool-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .tool-btn:hover {
+      background: #2d3244;
+      color: #c8cfe0;
+    }
+
+    .tool-btn.active {
+      background: #1e3a5f;
+      color: #7eb8f7;
+    }
+
+    .tool-btn.active svg {
+      stroke: #7eb8f7;
+    }
+
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: #8a93a8;
+      cursor: pointer;
+      transition: background .12s, color .12s;
+      flex-shrink: 0;
+    }
+
+    .icon-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .icon-btn:hover {
+      background: #2d3244;
+      color: #c8cfe0;
+    }
+
+    .snap-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #8a93a8;
+      cursor: pointer;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    .snap-label input[type=checkbox] {
+      accent-color: #7eb8f7;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .snap-label.on {
+      color: #7eb8f7;
+    }
+
+    .grid-size-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #8a93a8;
+      white-space: nowrap;
+      padding: 0 4px;
+    }
+
+    .grid-size-group label {
+      cursor: default;
+    }
+
+    .grid-size-group select {
+      background: #1a1d23;
+      color: #c8cfe0;
+      border: 1px solid #3a4060;
+      border-radius: 4px;
+      font-size: 11px;
+      padding: 2px 4px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .grid-size-group select:hover {
+      border-color: #7eb8f7;
+    }
+
+    .grid-size-group select:focus {
+      border-color: #7eb8f7;
+    }
+
+    /* ruler scale input */
+    .ruler-scale-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: #8a93a8;
+      white-space: nowrap;
+      padding: 0 4px;
+    }
+
+    .ruler-scale-group label {
+      cursor: default;
+    }
+
+    .ruler-scale-group input[type=number] {
+      width: 48px;
+      background: #1a1d23;
+      color: #c8cfe0;
+      border: 1px solid #3a4060;
+      border-radius: 4px;
+      font-size: 11px;
+      padding: 2px 5px;
+      outline: none;
+      text-align: right;
+      -moz-appearance: textfield;
+    }
+
+    .ruler-scale-group input[type=number]::-webkit-inner-spin-button,
+    .ruler-scale-group input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    .ruler-scale-group input[type=number]:hover,
+    .ruler-scale-group input[type=number]:focus {
+      border-color: #7eb8f7;
+    }
+
+    .ruler-scale-group span {
+      color: #5a6380;
+    }
+
+    /* zoom controls */
+    .zoom-group {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    #zoomDisplay {
+      min-width: 42px;
+      text-align: center;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      color: #8a93a8;
+      cursor: pointer;
+      padding: 4px 4px;
+      border-radius: 4px;
+      transition: background .12s, color .12s;
+    }
+
+    #zoomDisplay:hover {
+      background: #2d3244;
+      color: #c8cfe0;
+    }
+
+    #status {
+      margin-left: auto;
+      font-size: 11px;
+      color: #4a5568;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      padding-left: 8px;
+    }
+
+    #draftStatus {
+      font-size: 10px;
+      color: #4a7a4a;
+      white-space: nowrap;
+      padding-left: 10px;
+      opacity: 0;
+      transition: opacity .4s;
+    }
+
+    #draftStatus.show {
+      opacity: 1;
+    }
+
+    /* ── LAYERS PANEL ──────────────────────────────────────────── */
+    #layers-panel {
+      position: absolute;
+      bottom: 48px;
+      right: 16px;
+      width: 268px;
+      background: rgba(26, 31, 46, .92);
+      border: 1px solid #2e3340;
+      border-radius: 8px;
+      overflow: hidden;
+      opacity: 0.22;
+      transition: opacity .25s;
+      z-index: 200;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .45);
+    }
+
+    #layers-panel:hover,
+    #layers-panel.panel-dragging {
+      opacity: 1;
+    }
+
+    #layers-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      background: rgba(20, 24, 36, .7);
+      border-bottom: 1px solid #2e3340;
+      cursor: grab;
+      user-select: none;
+    }
+
+    #layers-header:active {
+      cursor: grabbing;
+    }
+
+    .layers-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8a93a8;
+      letter-spacing: .06em;
+      flex: 1;
+    }
+
+    #addLayerBtn {
+      background: none;
+      border: none;
+      color: #7eb8f7;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 2px;
+    }
+
+    #addLayerBtn:hover {
+      color: #b0d8ff;
+    }
+
+    #layers-list {
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 3px 0;
+    }
+
+    #layers-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #layers-list::-webkit-scrollbar-thumb {
+      background: #3a4060;
+      border-radius: 2px;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px 4px 6px;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      transition: background .1s;
+      min-height: 32px;
+    }
+
+    .layer-row:hover {
+      background: rgba(255, 255, 255, .04);
+    }
+
+    .layer-row.active {
+      border-left-color: #7eb8f7;
+      background: rgba(30, 58, 95, .35);
+    }
+
+    .layer-eye {
+      background: none;
+      border: none;
+      padding: 0 2px;
+      cursor: pointer;
+      color: #6a7390;
+      font-size: 13px;
+      flex-shrink: 0;
+      line-height: 1;
+      transition: color .12s;
+    }
+
+    .layer-eye:hover {
+      color: #c8cfe0;
+    }
+
+    .layer-eye.off {
+      color: #3a4060;
+    }
+
+    .layer-name {
+      flex: 1;
+      min-width: 0;
+      font-size: 11px;
+      color: #c8cfe0;
+      outline: none;
+      border-radius: 3px;
+      padding: 1px 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: text;
+    }
+
+    .layer-name:focus {
+      background: rgba(255, 255, 255, .07);
+      white-space: normal;
+      outline: 1px solid #3a6090;
+    }
+
+    .layer-op-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .layer-op-slider {
+      width: 44px;
+      height: 3px;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #3a4060;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .layer-op-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #7eb8f7;
+      cursor: pointer;
+    }
+
+    .layer-op-val {
+      font-size: 9px;
+      color: #4a5578;
+      min-width: 24px;
+      text-align: right;
+    }
+
+    .layer-actions {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+
+    .layer-row:hover .layer-actions {
+      opacity: 1;
+    }
+
+    .layer-row.active .layer-actions {
+      opacity: 1;
+    }
+
+    .layer-act {
+      background: none;
+      border: none;
+      color: #4a5578;
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 3px;
+      border-radius: 3px;
+      line-height: 1;
+      transition: color .1s, background .1s;
+    }
+
+    .layer-act:hover {
+      color: #c8cfe0;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .layer-act.del:hover {
+      color: #ff7070;
+    }
+
+    /* ── BRAND DROPDOWN ────────────────────────────────────────── */
+    #brand-wrap {
+      position: relative;
+      flex-shrink: 0;
+      /* Fill full toolbar height so there's no gap between text and menu */
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+    }
+
+    .brand {
+      cursor: default;
+    }
+
+    .brand-caret {
+      font-size: 9px;
+      opacity: .55;
+    }
+
+    #brand-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 195px;
+      background: #22262f;
+      border: 1px solid #2e3340;
+      border-radius: 0 6px 6px 6px;
+      /* Visual breathing room via padding instead of top offset */
+      padding: 6px 0 5px;
+      z-index: 400;
+      box-shadow: 0 6px 28px rgba(0, 0, 0, .65);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-5px);
+      transition: opacity .14s, transform .14s;
+    }
+
+    #brand-wrap:hover #brand-menu {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .bm-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #4a5578;
+      padding: 4px 14px 2px;
+    }
+
+    .bm-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 7px 14px;
+      background: none;
+      border: none;
+      color: #c8cfe0;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      white-space: nowrap;
+      transition: background .1s;
+    }
+
+    .bm-item:hover {
+      background: #2d3244;
+      color: #e8f0ff;
+    }
+
+    .bm-item svg {
+      flex-shrink: 0;
+    }
+
+    .bm-item kbd {
+      margin-left: auto;
+      font-size: 10px;
+      color: #4a5578;
+      font-family: monospace;
+    }
+
+    .bm-sep {
+      height: 1px;
+      background: #2e3340;
+      margin: 5px 0;
+    }
+
+    .bm-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      background: #1c2e1c;
+      color: #6dbd6d;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    /* ── TOOLBAR COLLAPSE ───────────────────────────────────────── */
+    .tb-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    #tbExpandBtn {
+      display: none;
+      flex-shrink: 0;
+      background: #2a2e3a;
+      border: 1px solid #3a4060;
+      border-radius: 6px;
+      color: #7eb8f7;
+      cursor: pointer;
+      padding: 3px 9px;
+      font-size: 13px;
+      transition: background .1s, color .1s;
+      margin-left: 2px;
+    }
+
+    #tbExpandBtn:hover {
+      background: #323850;
+      color: #b0d8ff;
+    }
+
+    /* ── CANVAS ─────────────────────────────────────────────── */
+    #canvas-wrap {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* ── HINT BAR ───────────────────────────────────────────── */
+    #hint {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 36, 50, .85);
+      border: 1px solid #2e3340;
+      color: #8a93a8;
+      font-size: 11px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="toolbar">
+    <!-- Brand + dropdown menu -->
+    <div id="brand-wrap">
+      <span class="brand">MicroCAD <span class="brand-caret">▾</span></span>
+      <div id="brand-menu">
+        <div class="bm-label">Archivo</div>
+        <button class="bm-item" id="saveBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" width="14" height="14">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          Guardar <kbd>Ctrl+S</kbd>
+        </button>
+        <button class="bm-item" id="openBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" width="14" height="14">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+          Abrir <kbd>Ctrl+O</kbd>
+        </button>
+        <input type="file" id="fileInput" accept=".mcad,application/json" style="display:none">
+        <div class="bm-sep"></div>
+        <div class="bm-label">Exportar</div>
+        <button class="bm-item" id="exportSVG">
+          <span class="bm-badge">SVG</span> Vectorial
+        </button>
+        <button class="bm-item" id="exportPNG">
+          <span class="bm-badge">PNG</span> Imagen 4×
+        </button>
+        <button class="bm-item" id="exportPDF">
+          <span class="bm-badge">PDF</span> Documento
+        </button>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Drawing tools -->
+    <button class="tool-btn active" data-tool="line" title="Línea (L)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="4" y1="20" x2="20" y2="4" />
+      </svg>
+      Línea
+    </button>
+    <button class="tool-btn" data-tool="rect" title="Rectángulo (R)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+        <rect x="4" y="6" width="16" height="12" />
+      </svg>
+      Rect.
+    </button>
+    <button class="tool-btn" data-tool="circle" title="Círculo (C)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="8" />
+      </svg>
+      Círculo
+    </button>
+    <button class="tool-btn" data-tool="triangle" title="Triángulo (T)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+        <polygon points="12,4 21,20 3,20" />
+      </svg>
+      Triáng.
+    </button>
+    <button class="tool-btn" data-tool="arc" title="Arco (A)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 20 Q12 2 20 20" fill="none" />
+      </svg>
+      Arco
+    </button>
+    <button class="tool-btn" data-tool="ground" title="Terreno / Apoyo (E)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <line x1="3" y1="10" x2="21" y2="10" />
+        <line x1="5" y1="10" x2="3" y2="14" />
+        <line x1="9" y1="10" x2="7" y2="14" />
+        <line x1="13" y1="10" x2="11" y2="14" />
+        <line x1="17" y1="10" x2="15" y2="14" />
+        <line x1="21" y1="10" x2="19" y2="14" />
+      </svg>
+      Terreno
+    </button>
+
+    <button class="tool-btn" data-tool="ruler" title="Regla — medir distancia (U)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="2" y="8" width="20" height="8" rx="1" />
+        <line x1="6" y1="8" x2="6" y2="12" />
+        <line x1="10" y1="8" x2="10" y2="11" />
+        <line x1="14" y1="8" x2="14" y2="12" />
+        <line x1="18" y1="8" x2="18" y2="11" />
+      </svg>
+      Regla
+    </button>
+
+    <div class="tb-group" id="tbg-edit">
+      <div class="sep"></div>
+      <!-- Group / Ungroup -->
+      <button class="icon-btn" id="groupBtn" title="Agrupar selección (Ctrl+G)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="2" y="7" width="8" height="6" rx="1" />
+          <rect x="14" y="7" width="8" height="6" rx="1" />
+          <path d="M6 13v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-2" />
+        </svg>
+      </button>
+      <button class="icon-btn" id="ungroupBtn" title="Desagrupar (Ctrl+Shift+G)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="2" y="8" width="8" height="6" rx="1" />
+          <rect x="14" y="8" width="8" height="6" rx="1" />
+          <path d="M6 8V6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v2" />
+        </svg>
+      </button>
+      <div class="sep"></div>
+      <!-- Grid toggle -->
+      <button class="icon-btn" id="gridToggleBtn" title="Mostrar/ocultar grilla (H)" style="color:#7eb8f7">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" />
+          <line x1="3" y1="9" x2="21" y2="9" />
+          <line x1="3" y1="15" x2="21" y2="15" />
+          <line x1="9" y1="3" x2="9" y2="21" />
+          <line x1="15" y1="3" x2="15" y2="21" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Select tool -->
+    <button class="tool-btn" data-tool="select" title="Seleccionar figura (S) · Supr para eliminar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M5 3l14 9-7 1-4 7z" />
+      </svg>
+      Selec.
+    </button>
+
+    <!-- Pan tool -->
+    <button class="tool-btn" data-tool="pan"
+      title="Mover canvas (V) · también: Rueda=zoom, Botón central=pan, Espacio+arrastrar=pan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M18 11V8a2 2 0 0 0-4 0v3" />
+        <path d="M14 8V5a2 2 0 0 0-4 0v6" />
+        <path d="M10 5V4a2 2 0 0 0-4 0v7" />
+        <path d="M6 11v2a6 6 0 0 0 6 6h2a6 6 0 0 0 6-6v-3a2 2 0 0 0-4 0" />
+      </svg>
+      Mover
+    </button>
+
+    <div class="tb-group" id="tbg-settings">
+      <div class="sep"></div>
+      <label class="snap-label" id="snapLabel" title="Snap a grilla (G)">
+        <input type="checkbox" id="snapToggle" checked>
+        Snap
+      </label>
+      <div class="grid-size-group">
+        <label for="gridSize">Grilla</label>
+        <select id="gridSize">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="ruler-scale-group" title="Escala: cuántos cm equivale 1 unidad de grilla">
+        <label for="rulerScale">1u =</label>
+        <input type="number" id="rulerScale" value="1" min="0.001" step="0.1">
+        <span>cm</span>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Undo — always visible -->
+    <button class="icon-btn" id="undoBtn" title="Deshacer (Ctrl+Z)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M9 14L4 9l5-5" />
+        <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+      </svg>
+    </button>
+
+    <!-- Collapsible: clear + zoom + origin -->
+    <div class="tb-group" id="tbg-zoom">
+      <button class="icon-btn" id="clearBtn" title="Limpiar todo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          <path d="M10 11v6M14 11v6" />
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+        </svg>
+      </button>
+      <div class="sep"></div>
+      <div class="zoom-group">
+        <button class="icon-btn" id="zoomOutBtn" title="Alejar (-)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <line x1="8" y1="11" x2="14" y2="11" />
+          </svg>
+        </button>
+        <span id="zoomDisplay" title="Clic para resetear vista (0)">100%</span>
+        <button class="icon-btn" id="zoomInBtn" title="Acercar (+)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <line x1="11" y1="8" x2="11" y2="14" />
+            <line x1="8" y1="11" x2="14" y2="11" />
+          </svg>
+        </button>
+      </div>
+      <button class="icon-btn" id="originBtn" title="Ir al origen (0,0) — tecla Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <line x1="12" y1="2" x2="12" y2="6" />
+          <line x1="12" y1="18" x2="12" y2="22" />
+          <line x1="2" y1="12" x2="6" y2="12" />
+          <line x1="18" y1="12" x2="22" y2="12" />
+        </svg>
+      </button>
+    </div>
+
+    <button id="tbExpandBtn" title="Mostrar herramientas colapsados">≫</button>
+    <span id="status">X:&nbsp;–&nbsp;&nbsp;Y:&nbsp;–</span>
+    <span id="draftStatus"></span>
+  </div>
+
+  <div id="canvas-wrap">
+    <canvas id="canvas"></canvas>
+    <div id="hint">Clic + arrastrar para dibujar</div>
+    <div id="layers-panel">
+      <div id="layers-header">
+        <span class="layers-title">CAPAS</span>
+        <button id="addLayerBtn" title="Nueva capa (Ctrl+L)">+</button>
+      </div>
+      <div id="layers-list"></div>
+    </div>
+  </div>
+
+  <script>
+    class MicroCAD {
+
+      constructor(cfg = {}) {
+        this.GRID = cfg.GRID ?? 20;
+        this.GRID_MAJOR = cfg.GRID_MAJOR ?? 5;
+        this.MIN_SCALE = cfg.MIN_SCALE ?? 0.04;
+        this.MAX_SCALE = cfg.MAX_SCALE ?? 80;
+        this.ZOOM_STEP = cfg.ZOOM_STEP ?? 1.25;
+        this.EXPORT_MARGIN = cfg.EXPORT_MARGIN ?? 40;
+        this.DRAFT_KEY = cfg.DRAFT_KEY ?? 'microcad_draft';
+        this.TB_GROUPS = cfg.TB_GROUPS ?? ['tbg-zoom', 'tbg-settings', 'tbg-edit'];
+
+        this.viewX = 0; this.viewY = 0; this.scale = 1;
+
+        this.currentTool = 'line';
+        this.shapes = [];
+        this.layers = [{ id: 1, name: 'Capa 1', opacity: 1, visible: true }];
+        this.activeLayerId = 1;
+        this.nextLayerId = 2;
+        this.history = [{ shapes: [], layers: [{ id: 1, name: 'Capa 1', opacity: 1, visible: true }] }];
+        this.histIdx = 0;
+
+        this.dragging = false;
+        this.dragStart = null;
+        this.clicks = [];
+        this.mousePos = null;
+        this.mouseRaw = null;
+        this.snapOn = true;
+        this.unitScale = 1;
+        this.gridVisible = true;
+        this.selectedSet = new Set();
+        this.rubberBand = null;
+
+
+        this.isPanning = false;
+        this.panLast = null;
+        this.spaceDown = false;
+        this.midPan = false;
+
+        this.tbExpanded = false;
+        this.draftFadeTimer = null;
+
+        this.HINTS = {
+          line: ['Clic y arrastra para dibujar la línea'],
+          rect: ['Clic y arrastra para dibujar el rectángulo'],
+          circle: ['Clic en el centro y arrastra para definir el radio'],
+          triangle: ['Clic en el punto 1', 'Clic en el punto 2', 'Clic en el punto 3 para cerrar'],
+          arc: ['Clic en el inicio del arco', 'Clic en un punto sobre el arco', 'Clic en el final del arco'],
+          pan: ['Arrastra para mover el canvas · Rueda del mouse = zoom'],
+          ruler: ['Clic y arrastra para medir una distancia'],
+          ground: ['Clic y arrastra para definir la línea de terreno'],
+          select: ['Clic = seleccionar · Shift+clic = agregar · Arrastra vacío = selección múltiple'],
+        };
+      }
+
+      init() {
+        this.canvas = document.getElementById('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.wrap = document.getElementById('canvas-wrap');
+        this.hint = document.getElementById('hint');
+        this.statusEl = document.getElementById('status');
+        this.zoomDisplay = document.getElementById('zoomDisplay');
+        this.draftEl = document.getElementById('draftStatus');
+
+        this._bindEvents();
+
+        document.getElementById('snapLabel').classList.add('on');
+        this.updateHint();
+        this.resize();
+        this.goToOrigin();
+        this.renderLayersPanel();
+        this.loadDraft();
+
+        setInterval(() => this.saveDraft(), 5000);
+      }
+
+      _bindEvents() {
+        const { canvas } = this;
+
+
+        document.querySelectorAll('[data-tool]').forEach(btn =>
+          btn.addEventListener('click', () => this.setTool(btn.dataset.tool))
+        );
+
+
+        canvas.addEventListener('mousemove', e => this._onMouseMove(e));
+        canvas.addEventListener('mouseleave', e => this._onMouseLeave(e));
+        canvas.addEventListener('mousedown', e => this._onMouseDown(e));
+        canvas.addEventListener('mouseup', e => this._onMouseUp(e));
+        canvas.addEventListener('contextmenu', e => { e.preventDefault(); this.cancelOp(); });
+        canvas.addEventListener('wheel', e => this._onWheel(e), { passive: false });
+
+
+        document.addEventListener('keydown', e => this._onKeyDown(e));
+        document.addEventListener('keyup', e => this._onKeyUp(e));
+
+
+        document.getElementById('snapToggle').addEventListener('change', e => {
+          this.snapOn = e.target.checked;
+          document.getElementById('snapLabel').classList.toggle('on', this.snapOn);
+          this.render();
+        });
+
+
+        document.getElementById('gridSize').addEventListener('change', e => {
+          this.GRID = parseInt(e.target.value, 10);
+          this.render();
+        });
+
+
+        document.getElementById('rulerScale').addEventListener('change', e => {
+          const v = parseFloat(e.target.value);
+          if (v > 0) { this.unitScale = v; this.render(); }
+        });
+        document.getElementById('rulerScale').addEventListener('input', e => {
+          const v = parseFloat(e.target.value);
+          if (v > 0) { this.unitScale = v; this.render(); }
+        });
+
+
+        document.getElementById('undoBtn').addEventListener('click', () => this.undo());
+
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+          if (!this.shapes.length) return;
+          if (confirm('¿Limpiar todo el dibujo?')) {
+            this.shapes = []; this.commit(); this.cancelOp();
+          }
+        });
+
+
+        document.getElementById('zoomInBtn').addEventListener('click', () => { this.zoomAt(this.canvas.width / 2, this.canvas.height / 2, this.ZOOM_STEP); this.render(); });
+        document.getElementById('zoomOutBtn').addEventListener('click', () => { this.zoomAt(this.canvas.width / 2, this.canvas.height / 2, 1 / this.ZOOM_STEP); this.render(); });
+        document.getElementById('zoomDisplay').addEventListener('click', () => this.resetView());
+        document.getElementById('originBtn').addEventListener('click', () => this.goToOrigin());
+
+
+        document.getElementById('gridToggleBtn').addEventListener('click', () => {
+          this.gridVisible = !this.gridVisible;
+          document.getElementById('gridToggleBtn').style.color = this.gridVisible ? '#7eb8f7' : '#4a5568';
+          this.render();
+        });
+
+
+        document.getElementById('groupBtn').addEventListener('click', () => this.groupSelected());
+        document.getElementById('ungroupBtn').addEventListener('click', () => this.ungroupSelected());
+        document.getElementById('addLayerBtn').addEventListener('click', () => this.addLayer());
+
+
+        this._bindLayerPanelDrag();
+
+
+        document.getElementById('saveBtn').addEventListener('click', () => this.doSave());
+        document.getElementById('openBtn').addEventListener('click', () => this.doOpen());
+        document.getElementById('exportSVG').addEventListener('click', () => this.doExportSVG());
+        document.getElementById('exportPNG').addEventListener('click', () => this.doExportPNG());
+        document.getElementById('exportPDF').addEventListener('click', () => this.doExportPDF());
+
+
+        document.getElementById('fileInput').addEventListener('change', e => this._onFileInput(e));
+
+
+        document.getElementById('tbExpandBtn').addEventListener('click', () => {
+          this.tbExpanded = !this.tbExpanded;
+          if (this.tbExpanded) {
+            this.TB_GROUPS.forEach(id => {
+              const el = document.getElementById(id);
+              el.style.display = 'flex';
+              el.style.visibility = '';
+            });
+            document.getElementById('tbExpandBtn').textContent = '«';
+          } else {
+            this.checkTbOverflow();
+          }
+        });
+
+
+        window.addEventListener('resize', () => this.resize());
+      }
+
+      _bindLayerPanelDrag() {
+        const panel = document.getElementById('layers-panel');
+        const header = document.getElementById('layers-header');
+        let pdrag = false, pox = 0, poy = 0;
+
+
+        document.getElementById('addLayerBtn').addEventListener('mousedown', e => e.stopPropagation());
+
+        header.addEventListener('mousedown', e => {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          const pr = panel.getBoundingClientRect();
+          const wr = this.wrap.getBoundingClientRect();
+          panel.style.right = 'auto';
+          panel.style.bottom = 'auto';
+          panel.style.left = (pr.left - wr.left) + 'px';
+          panel.style.top = (pr.top - wr.top) + 'px';
+          pox = e.clientX - pr.left;
+          poy = e.clientY - pr.top;
+          pdrag = true;
+          panel.classList.add('panel-dragging');
+        });
+
+        document.addEventListener('mousemove', e => {
+          if (!pdrag) return;
+          const wr = this.wrap.getBoundingClientRect();
+          const x = e.clientX - wr.left - pox;
+          const y = e.clientY - wr.top - poy;
+          panel.style.left = Math.max(0, Math.min(wr.width - panel.offsetWidth, x)) + 'px';
+          panel.style.top = Math.max(0, Math.min(wr.height - panel.offsetHeight, y)) + 'px';
+        });
+
+
+        document.addEventListener('mouseup', () => {
+          if (!pdrag) return;
+          pdrag = false;
+          panel.classList.remove('panel-dragging');
+        });
+        window.addEventListener('blur', () => {
+          pdrag = false;
+          panel.classList.remove('panel-dragging');
+        });
+      }
+
+
+
+
+      screenToWorld(sx, sy) {
+        return { x: (sx - this.viewX) / this.scale, y: (sy - this.viewY) / this.scale };
+      }
+
+      visibleRect() {
+        return {
+          left: -this.viewX / this.scale,
+          top: -this.viewY / this.scale,
+          right: (this.canvas.width - this.viewX) / this.scale,
+          bottom: (this.canvas.height - this.viewY) / this.scale,
+        };
+      }
+
+      zoomAt(sx, sy, factor) {
+        const wx = (sx - this.viewX) / this.scale;
+        const wy = (sy - this.viewY) / this.scale;
+        this.scale = Math.max(this.MIN_SCALE, Math.min(this.MAX_SCALE, this.scale * factor));
+        this.viewX = sx - wx * this.scale;
+        this.viewY = sy - wy * this.scale;
+        this.updateZoomDisplay();
+      }
+
+      resetView() {
+        this.viewX = 0; this.viewY = 0; this.scale = 1;
+        this.updateZoomDisplay();
+        this.render();
+      }
+
+      goToOrigin() {
+        this.viewX = this.canvas.width / 2;
+        this.viewY = this.canvas.height / 2;
+        this.render();
+      }
+
+      updateZoomDisplay() {
+        this.zoomDisplay.textContent = Math.round(this.scale * 100) + '%';
+      }
+
+
+
+
+      snapW(wx, wy) {
+        if (!this.snapOn) return { x: wx, y: wy };
+        return {
+          x: Math.round(wx / this.GRID) * this.GRID,
+          y: Math.round(wy / this.GRID) * this.GRID,
+        };
+      }
+
+      evtWorld(e) {
+        const r = this.canvas.getBoundingClientRect();
+        const sx = e.clientX - r.left;
+        const sy = e.clientY - r.top;
+        const w = this.screenToWorld(sx, sy);
+        return this.snapW(w.x, w.y);
+      }
+
+      evtScreen(e) {
+        const r = this.canvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+
+
+
+
+      updateCursor() {
+        const panning = this.currentTool === 'pan' || this.spaceDown;
+        if (panning) this.canvas.style.cursor = this.isPanning ? 'grabbing' : 'grab';
+        else this.canvas.style.cursor = 'crosshair';
+      }
+
+
+
+
+      updateHint() {
+        const list = this.HINTS[this.currentTool] || [''];
+        const step = Math.min(this.clicks.length, list.length - 1);
+        this.hint.textContent = list[step];
+      }
+
+
+
+
+      applyStyle(preview) {
+        const { ctx, scale } = this;
+        if (preview) {
+          ctx.strokeStyle = '#4a9eff';
+          ctx.lineWidth = 1.5 / scale;
+          ctx.setLineDash([6 / scale, 4 / scale]);
+        } else {
+          ctx.strokeStyle = '#c8d8f0';
+          ctx.lineWidth = 1.8 / scale;
+          ctx.setLineDash([]);
+        }
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+      }
+
+      drawShape(s, preview = false) {
+        if (s.type === 'group') {
+          s.children.forEach(c => this.drawShape(c, preview));
+          return;
+        }
+        const { ctx } = this;
+        ctx.save();
+        this.applyStyle(preview);
+        switch (s.type) {
+          case 'line':
+            ctx.beginPath();
+            ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2);
+            ctx.stroke(); break;
+
+          case 'rect':
+            ctx.beginPath();
+            ctx.rect(s.x, s.y, s.w, s.h);
+            ctx.stroke(); break;
+
+          case 'circle':
+            ctx.beginPath();
+            ctx.arc(s.cx, s.cy, Math.max(0.01, s.r), 0, Math.PI * 2);
+            ctx.stroke(); break;
+
+          case 'triangle':
+            ctx.beginPath();
+            ctx.moveTo(s.p1.x, s.p1.y);
+            ctx.lineTo(s.p2.x, s.p2.y);
+            ctx.lineTo(s.p3.x, s.p3.y);
+            ctx.closePath();
+            ctx.stroke(); break;
+
+          case 'arc':
+            if (s.r < 0.01) break;
+            ctx.beginPath();
+            ctx.arc(s.cx, s.cy, s.r, s.sa, s.ea, s.ccw);
+            ctx.stroke(); break;
+
+          case 'ruler':
+            this.drawRuler(s, preview); break;
+
+          case 'ground':
+            this.drawGround(s, preview); break;
+        }
+        ctx.restore();
+      }
+
+      drawGround(s, preview) {
+        const { ctx, scale } = this;
+        const dx = s.x2 - s.x1, dy = s.y2 - s.y1;
+        const len = Math.hypot(dx, dy);
+        if (len < 1) return;
+        const ux = dx / len, uy = dy / len;
+
+        let px = -uy, py = ux;
+        if (py < 0) { px = -px; py = -py; }
+
+        const hx = (-ux + px) * Math.SQRT1_2;
+        const hy = (-uy + py) * Math.SQRT1_2;
+        const hMag = Math.hypot(hx, hy);
+        const hnx = hx / hMag, hny = hy / hMag;
+
+        const col = preview ? '#4a9eff' : '#c8d8f0';
+        const hLen = 10;
+        const spacing = 14;
+
+        ctx.save();
+        ctx.strokeStyle = col;
+        ctx.lineCap = 'round';
+        ctx.setLineDash([]);
+
+        ctx.lineWidth = 1.8 / scale;
+        ctx.beginPath();
+        ctx.moveTo(s.x1, s.y1);
+        ctx.lineTo(s.x2, s.y2);
+        ctx.stroke();
+
+        ctx.lineWidth = 1.2 / scale;
+        let t = spacing * 0.5;
+        while (t <= len) {
+          const bx = s.x1 + ux * t;
+          const by = s.y1 + uy * t;
+          ctx.beginPath();
+          ctx.moveTo(bx, by);
+          ctx.lineTo(bx + hnx * hLen, by + hny * hLen);
+          ctx.stroke();
+          t += spacing;
+        }
+        ctx.restore();
+      }
+
+      drawRuler(s, preview) {
+        const { ctx, scale, unitScale } = this;
+        const dx = s.x2 - s.x1;
+        const dy = s.y2 - s.y1;
+        const len = Math.hypot(dx, dy);
+        if (len < 1) return;
+
+        const ux = dx / len, uy = dy / len;
+        const px = -uy, py = ux;
+
+        const tickH = 8 / scale;
+        const lw = 1.5 / scale;
+
+        ctx.save();
+        ctx.setLineDash([]);
+        ctx.lineWidth = lw;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#f0c040';
+
+        ctx.beginPath();
+        ctx.moveTo(s.x1, s.y1);
+        ctx.lineTo(s.x2, s.y2);
+        ctx.stroke();
+
+        [[s.x1, s.y1], [s.x2, s.y2]].forEach(([tx, ty]) => {
+          ctx.beginPath();
+          ctx.moveTo(tx + px * tickH, ty + py * tickH);
+          ctx.lineTo(tx - px * tickH, ty - py * tickH);
+          ctx.stroke();
+        });
+
+        const dist = len * unitScale;
+        const label = dist < 100
+          ? dist.toFixed(2) + ' cm'
+          : (dist / 100).toFixed(3) + ' m';
+
+        const mx = (s.x1 + s.x2) / 2;
+        const my = (s.y1 + s.y2) / 2;
+        const fontSize = Math.max(10, 13) / scale;
+        ctx.font = `bold ${fontSize}px 'Segoe UI', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const offset = tickH * 2 + 3 / scale;
+        const lx = mx + px * offset;
+        const ly = my + py * offset;
+
+        const tw = ctx.measureText(label).width;
+        const th = fontSize * 1.3;
+        const pad = 4 / scale;
+        const rx = lx - tw / 2 - pad, ry = ly - th / 2, rw = tw + pad * 2, rh = th, rr = 3 / scale;
+        ctx.fillStyle = 'rgba(20,24,34,0.82)';
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(rx, ry, rw, rh, rr);
+        else ctx.rect(rx, ry, rw, rh);
+        ctx.fill();
+
+        ctx.fillStyle = preview ? '#ffe066' : '#f0c040';
+        ctx.fillText(label, lx, ly);
+        ctx.restore();
+      }
+
+
+
+
+      distToSegment(px, py, x1, y1, x2, y2) {
+        const dx = x2 - x1, dy = y2 - y1;
+        const len2 = dx * dx + dy * dy;
+        if (len2 === 0) return Math.hypot(px - x1, py - y1);
+        const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / len2));
+        return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+      }
+
+      hitTest(s, wx, wy, thr) {
+        switch (s.type) {
+          case 'line':
+          case 'ruler':
+            return this.distToSegment(wx, wy, s.x1, s.y1, s.x2, s.y2) < thr;
+          case 'rect': {
+            const inX = wx >= s.x && wx <= s.x + s.w;
+            const inY = wy >= s.y && wy <= s.y + s.h;
+            return (inX && (Math.abs(wy - s.y) < thr || Math.abs(wy - (s.y + s.h)) < thr)) ||
+              (inY && (Math.abs(wx - s.x) < thr || Math.abs(wx - (s.x + s.w)) < thr)) ||
+              (inX && inY);
+          }
+          case 'circle':
+            return Math.abs(Math.hypot(wx - s.cx, wy - s.cy) - s.r) < thr;
+          case 'triangle':
+            return this.distToSegment(wx, wy, s.p1.x, s.p1.y, s.p2.x, s.p2.y) < thr ||
+              this.distToSegment(wx, wy, s.p2.x, s.p2.y, s.p3.x, s.p3.y) < thr ||
+              this.distToSegment(wx, wy, s.p3.x, s.p3.y, s.p1.x, s.p1.y) < thr;
+          case 'arc':
+            return Math.abs(Math.hypot(wx - s.cx, wy - s.cy) - s.r) < thr;
+          case 'ground':
+            return this.distToSegment(wx, wy, s.x1, s.y1, s.x2, s.y2) < thr;
+          case 'group':
+            return s.children.some(c => this.hitTest(c, wx, wy, thr));
+        }
+        return false;
+      }
+
+      findShapeAt(wx, wy) {
+        const thr = 8 / this.scale;
+        for (let i = this.shapes.length - 1; i >= 0; i--) {
+          const layer = this.layers.find(l => l.id === (this.shapes[i].layerId || 1));
+          if (layer && !layer.visible) continue;
+          if (this.hitTest(this.shapes[i], wx, wy, thr)) return i;
+        }
+        return -1;
+      }
+
+      shapeBBox(s) {
+        switch (s.type) {
+          case 'line': case 'ruler':
+            return {
+              x: Math.min(s.x1, s.x2), y: Math.min(s.y1, s.y2),
+              w: Math.abs(s.x2 - s.x1), h: Math.abs(s.y2 - s.y1)
+            };
+          case 'rect':
+            return { x: s.x, y: s.y, w: s.w, h: s.h };
+          case 'circle':
+            return { x: s.cx - s.r, y: s.cy - s.r, w: s.r * 2, h: s.r * 2 };
+          case 'triangle': {
+            const xs = [s.p1.x, s.p2.x, s.p3.x], ys = [s.p1.y, s.p2.y, s.p3.y];
+            const x = Math.min(...xs), y = Math.min(...ys);
+            return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
+          }
+          case 'arc':
+            return { x: s.cx - s.r, y: s.cy - s.r, w: s.r * 2, h: s.r * 2 };
+          case 'ground':
+            return {
+              x: Math.min(s.x1, s.x2), y: Math.min(s.y1, s.y2),
+              w: Math.abs(s.x2 - s.x1), h: Math.abs(s.y2 - s.y1)
+            };
+          case 'group': {
+            let gx = Infinity, gy = Infinity, gx2 = -Infinity, gy2 = -Infinity;
+            s.children.forEach(c => {
+              const b = this.shapeBBox(c);
+              gx = Math.min(gx, b.x); gy = Math.min(gy, b.y);
+              gx2 = Math.max(gx2, b.x + b.w); gy2 = Math.max(gy2, b.y + b.h);
+            });
+            return { x: gx, y: gy, w: gx2 - gx, h: gy2 - gy };
+          }
+        }
+        return { x: 0, y: 0, w: 0, h: 0 };
+      }
+
+      drawRubberBand() {
+        const { ctx, scale, rubberBand: rb } = this;
+        const x = Math.min(rb.x1, rb.x2);
+        const y = Math.min(rb.y1, rb.y2);
+        const w = Math.abs(rb.x2 - rb.x1);
+        const h = Math.abs(rb.y2 - rb.y1);
+        ctx.save();
+        ctx.fillStyle = 'rgba(74,158,255,0.07)';
+        ctx.strokeStyle = '#4a9eff';
+        ctx.lineWidth = 1 / scale;
+        ctx.setLineDash([4 / scale, 3 / scale]);
+        ctx.beginPath(); ctx.rect(x, y, w, h);
+        ctx.fill(); ctx.stroke();
+        ctx.restore();
+      }
+
+      drawSelectionBox(s) {
+        const { ctx, scale } = this;
+        const bb = this.shapeBBox(s);
+        const pad = 8 / scale;
+        const hs = 5 / scale;
+        const x = bb.x - pad, y = bb.y - pad;
+        const w = bb.w + pad * 2, h = bb.h + pad * 2;
+
+        ctx.save();
+        ctx.strokeStyle = '#4a9eff';
+        ctx.lineWidth = 1.2 / scale;
+        ctx.setLineDash([5 / scale, 3 / scale]);
+        ctx.strokeRect(x, y, w, h);
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#4a9eff';
+        [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].forEach(([hx, hy]) => {
+          ctx.fillRect(hx - hs / 2, hy - hs / 2, hs, hs);
+        });
+        ctx.restore();
+      }
+
+
+
+
+      arcFrom3Pts(p1, p2, p3) {
+        const ax = p1.x, ay = p1.y, bx = p2.x, by = p2.y, cx = p3.x, cy = p3.y;
+        const D = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+        if (Math.abs(D) < 1e-8) return null;
+
+        const ux = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / D;
+        const uy = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / D;
+        const r = Math.hypot(ax - ux, ay - uy);
+        const sa = Math.atan2(ay - uy, ax - ux);
+        const ea = Math.atan2(cy - uy, cx - ux);
+        const ma = Math.atan2(by - uy, bx - ux);
+
+        const norm = x => ((x % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        const an = norm(sa), bn = norm(ea), mn = norm(ma);
+        const midOnCW = bn > an ? (mn >= an && mn <= bn) : (mn >= an || mn <= bn);
+        const ccw = midOnCW;
+
+        return { type: 'arc', cx: ux, cy: uy, r, sa, ea, ccw };
+      }
+
+
+
+
+      previewShape() {
+        if (!this.mousePos || this.currentTool === 'pan') return null;
+        const m = this.mousePos;
+
+        switch (this.currentTool) {
+          case 'line':
+            if (!this.dragging) return null;
+            return { type: 'line', x1: this.dragStart.x, y1: this.dragStart.y, x2: m.x, y2: m.y };
+
+          case 'rect':
+            if (!this.dragging) return null;
+            return {
+              type: 'rect',
+              x: Math.min(this.dragStart.x, m.x), y: Math.min(this.dragStart.y, m.y),
+              w: Math.abs(m.x - this.dragStart.x), h: Math.abs(m.y - this.dragStart.y),
+            };
+
+          case 'circle':
+            if (!this.dragging) return null;
+            return {
+              type: 'circle', cx: this.dragStart.x, cy: this.dragStart.y,
+              r: Math.hypot(m.x - this.dragStart.x, m.y - this.dragStart.y)
+            };
+
+          case 'triangle':
+            if (this.clicks.length === 0) return null;
+            if (this.clicks.length === 1) return { type: 'line', x1: this.clicks[0].x, y1: this.clicks[0].y, x2: m.x, y2: m.y };
+            return { type: 'triangle', p1: this.clicks[0], p2: this.clicks[1], p3: m };
+
+          case 'arc':
+            if (this.clicks.length === 0) return null;
+            if (this.clicks.length === 1) return { type: 'line', x1: this.clicks[0].x, y1: this.clicks[0].y, x2: m.x, y2: m.y };
+            return this.arcFrom3Pts(this.clicks[0], this.clicks[1], m);
+
+          case 'ruler':
+            if (!this.dragging) return null;
+            return { type: 'ruler', x1: this.dragStart.x, y1: this.dragStart.y, x2: m.x, y2: m.y };
+
+          case 'ground':
+            if (!this.dragging) return null;
+            return { type: 'ground', x1: this.dragStart.x, y1: this.dragStart.y, x2: m.x, y2: m.y };
+        }
+        return null;
+      }
+
+
+
+
+      drawGrid() {
+        if (!this.gridVisible) return;
+        const { ctx, scale, GRID, GRID_MAJOR } = this;
+        const vr = this.visibleRect();
+
+        const x0 = Math.floor(vr.left / GRID) * GRID;
+        const y0 = Math.floor(vr.top / GRID) * GRID;
+        const x1 = Math.ceil(vr.right / GRID) * GRID;
+        const y1 = Math.ceil(vr.bottom / GRID) * GRID;
+
+        const minorW = 0.5 / scale;
+        const majorW = 1.0 / scale;
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#252a35';
+        ctx.lineWidth = minorW;
+        ctx.setLineDash([]);
+        for (let x = x0; x <= x1; x += GRID) { ctx.moveTo(x, vr.top); ctx.lineTo(x, vr.bottom); }
+        for (let y = y0; y <= y1; y += GRID) { ctx.moveTo(vr.left, y); ctx.lineTo(vr.right, y); }
+        ctx.stroke();
+
+        const mg = GRID * GRID_MAJOR;
+        const mx0 = Math.floor(vr.left / mg) * mg;
+        const my0 = Math.floor(vr.top / mg) * mg;
+        ctx.beginPath();
+        ctx.strokeStyle = '#2d3344';
+        ctx.lineWidth = majorW;
+        for (let x = mx0; x <= x1; x += mg) { ctx.moveTo(x, vr.top); ctx.lineTo(x, vr.bottom); }
+        for (let y = my0; y <= y1; y += mg) { ctx.moveTo(vr.left, y); ctx.lineTo(vr.right, y); }
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#3a4060';
+        ctx.lineWidth = majorW * 1.5;
+        ctx.moveTo(vr.left, 0); ctx.lineTo(vr.right, 0);
+        ctx.moveTo(0, vr.top); ctx.lineTo(0, vr.bottom);
+        ctx.stroke();
+      }
+
+      drawCursorOverlay() {
+        if (!this.mousePos || this.currentTool === 'pan') return;
+        const { ctx, scale, mousePos } = this;
+        const vr = this.visibleRect();
+        const { x, y } = mousePos;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(74,158,255,.15)';
+        ctx.lineWidth = 1 / scale;
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(x, vr.top); ctx.lineTo(x, vr.bottom);
+        ctx.moveTo(vr.left, y); ctx.lineTo(vr.right, y);
+        ctx.stroke();
+
+        ctx.fillStyle = this.snapOn ? '#4a9eff' : '#888';
+        ctx.beginPath();
+        ctx.arc(x, y, 3 / scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      drawClickMarkers() {
+        if (!this.clicks.length) return;
+        const { ctx, scale, clicks } = this;
+        const r = 5 / scale;
+        clicks.forEach((p, i) => {
+          ctx.save();
+          ctx.fillStyle = '#ff7c40';
+          ctx.strokeStyle = '#1a1d23';
+          ctx.lineWidth = 1.2 / scale;
+          ctx.setLineDash([]);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fill(); ctx.stroke();
+
+          ctx.fillStyle = '#ff7c40';
+          ctx.font = `${11 / scale}px monospace`;
+          ctx.fillText(i + 1, p.x + 7 / scale, p.y - 5 / scale);
+          ctx.restore();
+        });
+      }
+
+
+
+
+      render() {
+        const { ctx, canvas, scale, viewX, viewY } = this;
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        ctx.fillStyle = '#1a1d23';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.save();
+        ctx.setTransform(scale, 0, 0, scale, viewX, viewY);
+
+        this.drawGrid();
+        this.layers.forEach(layer => {
+          if (!layer.visible) return;
+          ctx.save();
+          ctx.globalAlpha = layer.opacity;
+          this.shapes.forEach(s => {
+            if ((s.layerId || 1) === layer.id) this.drawShape(s);
+          });
+          ctx.restore();
+        });
+        this.shapes.forEach((s, i) => { if (this.selectedSet.has(i)) this.drawSelectionBox(s); });
+        if (this.rubberBand) this.drawRubberBand();
+        this.drawCursorOverlay();
+        this.drawClickMarkers();
+
+        const pv = this.previewShape();
+        if (pv) this.drawShape(pv, true);
+
+        ctx.restore();
+      }
+
+
+
+
+      commit() {
+        this.history = this.history.slice(0, this.histIdx + 1);
+        this.history.push(JSON.parse(JSON.stringify({ shapes: this.shapes, layers: this.layers })));
+        this.histIdx = this.history.length - 1;
+      }
+
+      undo() {
+        if (this.histIdx > 0) {
+          this.histIdx--;
+          ({ shapes: this.shapes, layers: this.layers } =
+            JSON.parse(JSON.stringify(this.history[this.histIdx])));
+          if (!this.layers.some(l => l.id === this.activeLayerId))
+            this.activeLayerId = this.layers[0].id;
+          this.nextLayerId = Math.max(this.nextLayerId, ...this.layers.map(l => l.id + 1));
+          this.renderLayersPanel(); this.render();
+        }
+      }
+
+      redo() {
+        if (this.histIdx < this.history.length - 1) {
+          this.histIdx++;
+          ({ shapes: this.shapes, layers: this.layers } =
+            JSON.parse(JSON.stringify(this.history[this.histIdx])));
+          if (!this.layers.some(l => l.id === this.activeLayerId))
+            this.activeLayerId = this.layers[0].id;
+          this.nextLayerId = Math.max(this.nextLayerId, ...this.layers.map(l => l.id + 1));
+          this.renderLayersPanel(); this.render();
+        }
+      }
+
+
+
+
+      _onMouseMove(e) {
+        const sc = this.evtScreen(e);
+        this.mousePos = this.evtWorld(e);
+        this.mouseRaw = sc;
+
+        this.statusEl.innerHTML = `X:&nbsp;${this.mousePos.x}&nbsp;&nbsp;Y:&nbsp;${this.mousePos.y}`;
+
+        if (this.isPanning && this.panLast) {
+          this.viewX += sc.x - this.panLast.x;
+          this.viewY += sc.y - this.panLast.y;
+          this.panLast = sc;
+          this.render();
+          return;
+        }
+
+        if (this.rubberBand) {
+          const raw = this.screenToWorld(sc.x, sc.y);
+          this.rubberBand.x2 = raw.x;
+          this.rubberBand.y2 = raw.y;
+        }
+
+        this.render();
+      }
+
+      _onMouseLeave(e) {
+        this.mousePos = null;
+        if (this.isPanning && !this.midPan) { this.isPanning = false; this.panLast = null; }
+        this.render();
+      }
+
+      _onMouseDown(e) {
+        if (e.button === 1) {
+          e.preventDefault();
+          this.isPanning = true; this.midPan = true;
+          this.panLast = this.evtScreen(e);
+          this.updateCursor();
+          return;
+        }
+
+        if (e.button !== 0) return;
+        const sc = this.evtScreen(e);
+        const pos = this.evtWorld(e);
+
+        if (this.currentTool === 'pan' || this.spaceDown) {
+          this.isPanning = true; this.panLast = sc;
+          this.updateCursor();
+          return;
+        }
+
+        if (this.currentTool === 'select') {
+          const hit = this.findShapeAt(pos.x, pos.y);
+          if (hit >= 0) {
+            if (e.shiftKey) {
+              if (this.selectedSet.has(hit)) this.selectedSet.delete(hit);
+              else this.selectedSet.add(hit);
+            } else {
+              this.selectedSet.clear();
+              this.selectedSet.add(hit);
+            }
+            this.hint.textContent = this.selectedSet.size > 1
+              ? `${this.selectedSet.size} figuras · Supr=eliminar · Ctrl+D=duplicar · Esc=deseleccionar`
+              : 'Figura seleccionada · Supr=eliminar · Ctrl+D=duplicar · Esc=deseleccionar';
+          } else {
+            if (!e.shiftKey) this.selectedSet.clear();
+            const raw = this.screenToWorld(sc.x, sc.y);
+            this.rubberBand = { x1: raw.x, y1: raw.y, x2: raw.x, y2: raw.y };
+          }
+          this.render();
+          return;
+        }
+
+        if (this.currentTool === 'triangle' || this.currentTool === 'arc') {
+          this.clicks.push(pos);
+
+          if (this.currentTool === 'triangle' && this.clicks.length === 3) {
+            this.shapes.push({
+              type: 'triangle', p1: this.clicks[0], p2: this.clicks[1],
+              p3: this.clicks[2], layerId: this.activeLayerId
+            });
+            this.commit(); this.clicks = [];
+          } else if (this.currentTool === 'arc' && this.clicks.length === 3) {
+            const arc = this.arcFrom3Pts(this.clicks[0], this.clicks[1], this.clicks[2]);
+            if (arc) { arc.layerId = this.activeLayerId; this.shapes.push(arc); this.commit(); }
+            this.clicks = [];
+          }
+
+          this.updateHint(); this.render();
+          return;
+        }
+
+        this.dragging = true;
+        this.dragStart = pos;
+      }
+
+      _onMouseUp(e) {
+        if (e.button === 1) {
+          this.isPanning = false; this.midPan = false; this.panLast = null;
+          this.updateCursor(); return;
+        }
+
+        if (e.button !== 0) return;
+
+        if (this.isPanning) {
+          this.isPanning = false; this.panLast = null;
+          this.updateCursor(); return;
+        }
+
+        if (this.rubberBand) {
+          const rx1 = Math.min(this.rubberBand.x1, this.rubberBand.x2);
+          const rx2 = Math.max(this.rubberBand.x1, this.rubberBand.x2);
+          const ry1 = Math.min(this.rubberBand.y1, this.rubberBand.y2);
+          const ry2 = Math.max(this.rubberBand.y1, this.rubberBand.y2);
+          this.shapes.forEach((s, i) => {
+            const layer = this.layers.find(l => l.id === (s.layerId || 1));
+            if (layer && !layer.visible) return;
+            const bb = this.shapeBBox(s);
+            if (bb.x < rx2 && bb.x + bb.w > rx1 && bb.y < ry2 && bb.y + bb.h > ry1)
+              this.selectedSet.add(i);
+          });
+          this.rubberBand = null;
+          if (this.selectedSet.size > 0) {
+            this.hint.textContent = this.selectedSet.size > 1
+              ? `${this.selectedSet.size} figuras · Supr=eliminar · Ctrl+D=duplicar · Esc=deseleccionar`
+              : 'Figura seleccionada · Supr=eliminar · Ctrl+D=duplicar · Esc=deseleccionar';
+          } else {
+            this.updateHint();
+          }
+          this.render();
+          return;
+        }
+
+        if (!this.dragging) return;
+        const pos = this.evtWorld(e);
+        this.dragging = false;
+
+        let s = null;
+        switch (this.currentTool) {
+          case 'line':
+            if (Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y) >= this.GRID * 0.4)
+              s = { type: 'line', x1: this.dragStart.x, y1: this.dragStart.y, x2: pos.x, y2: pos.y };
+            break;
+          case 'rect':
+            if (Math.abs(pos.x - this.dragStart.x) >= this.GRID * 0.4 &&
+              Math.abs(pos.y - this.dragStart.y) >= this.GRID * 0.4)
+              s = {
+                type: 'rect',
+                x: Math.min(this.dragStart.x, pos.x), y: Math.min(this.dragStart.y, pos.y),
+                w: Math.abs(pos.x - this.dragStart.x), h: Math.abs(pos.y - this.dragStart.y)
+              };
+            break;
+          case 'circle': {
+            const r = Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y);
+            if (r >= this.GRID * 0.4)
+              s = { type: 'circle', cx: this.dragStart.x, cy: this.dragStart.y, r };
+            break;
+          }
+          case 'ruler':
+            if (Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y) >= this.GRID * 0.4)
+              s = { type: 'ruler', x1: this.dragStart.x, y1: this.dragStart.y, x2: pos.x, y2: pos.y };
+            break;
+          case 'ground':
+            if (Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y) >= this.GRID * 0.4)
+              s = { type: 'ground', x1: this.dragStart.x, y1: this.dragStart.y, x2: pos.x, y2: pos.y };
+            break;
+        }
+
+        if (s) { s.layerId = this.activeLayerId; this.shapes.push(s); this.commit(); }
+        this.dragStart = null;
+        this.render();
+      }
+
+
+
+
+      _onWheel(e) {
+        e.preventDefault();
+        if (e.ctrlKey) {
+          const sc = this.evtScreen(e);
+          const factor = e.deltaY < 0 ? this.ZOOM_STEP : 1 / this.ZOOM_STEP;
+          this.zoomAt(sc.x, sc.y, factor);
+        } else if (e.shiftKey) {
+          this.viewX -= e.deltaY;
+        } else {
+          this.viewY -= e.deltaY;
+        }
+        this.render();
+      }
+
+
+
+
+      offsetShape(s, dx, dy) {
+        const o = { ...s };
+        switch (s.type) {
+          case 'line': case 'ruler': case 'ground':
+            o.x1 += dx; o.y1 += dy; o.x2 += dx; o.y2 += dy; break;
+          case 'rect':
+            o.x += dx; o.y += dy; break;
+          case 'circle':
+            o.cx += dx; o.cy += dy; break;
+          case 'triangle':
+            o.p1 = { x: s.p1.x + dx, y: s.p1.y + dy };
+            o.p2 = { x: s.p2.x + dx, y: s.p2.y + dy };
+            o.p3 = { x: s.p3.x + dx, y: s.p3.y + dy };
+            break;
+          case 'arc':
+            o.cx += dx; o.cy += dy; break;
+          case 'group':
+            o.children = s.children.map(c => this.offsetShape(c, dx, dy)); break;
+        }
+        return o;
+      }
+
+
+
+
+      addLayer() {
+        const id = this.nextLayerId++;
+        this.layers.push({ id, name: `Capa ${id}`, opacity: 1, visible: true });
+        this.activeLayerId = id;
+        this.commit(); this.renderLayersPanel();
+      }
+
+      deleteLayer(id) {
+        if (this.layers.length === 1) return;
+        const idx = this.layers.findIndex(l => l.id === id);
+        const target = this.layers[idx - 1] || this.layers[idx + 1];
+        this.shapes.forEach(s => { if ((s.layerId || 1) === id) s.layerId = target.id; });
+        this.layers.splice(idx, 1);
+        if (this.activeLayerId === id) this.activeLayerId = target.id;
+        this.commit(); this.renderLayersPanel(); this.render();
+      }
+
+      duplicateLayer(id) {
+        const src = this.layers.find(l => l.id === id);
+        const newId = this.nextLayerId++;
+        const idx = this.layers.findIndex(l => l.id === id);
+        this.layers.splice(idx + 1, 0, { ...src, id: newId, name: src.name + ' copia' });
+        this.shapes.filter(s => (s.layerId || 1) === id)
+          .forEach(s => this.shapes.push({ ...s, layerId: newId }));
+        this.activeLayerId = newId;
+        this.commit(); this.renderLayersPanel(); this.render();
+      }
+
+      mergeLayerDown(id) {
+        const idx = this.layers.findIndex(l => l.id === id);
+        if (idx === 0) return;
+        const belowId = this.layers[idx - 1].id;
+        this.shapes.forEach(s => { if ((s.layerId || 1) === id) s.layerId = belowId; });
+        this.layers.splice(idx, 1);
+        if (this.activeLayerId === id) this.activeLayerId = belowId;
+        this.commit(); this.renderLayersPanel(); this.render();
+      }
+
+      moveLayerUp(id) {
+        const idx = this.layers.findIndex(l => l.id === id);
+        if (idx >= this.layers.length - 1) return;
+        [this.layers[idx], this.layers[idx + 1]] = [this.layers[idx + 1], this.layers[idx]];
+        this.commit(); this.renderLayersPanel(); this.render();
+      }
+
+      moveLayerDown(id) {
+        const idx = this.layers.findIndex(l => l.id === id);
+        if (idx <= 0) return;
+        [this.layers[idx], this.layers[idx - 1]] = [this.layers[idx - 1], this.layers[idx]];
+        this.commit(); this.renderLayersPanel(); this.render();
+      }
+
+      renderLayersPanel() {
+        const list = document.getElementById('layers-list');
+        list.innerHTML = '';
+        [...this.layers].reverse().forEach(layer => {
+          const row = document.createElement('div');
+          row.className = 'layer-row' + (layer.id === this.activeLayerId ? ' active' : '');
+          row.title = 'Clic para activar capa';
+
+          const eye = document.createElement('button');
+          eye.className = 'layer-eye' + (layer.visible ? '' : ' off');
+          eye.textContent = layer.visible ? '◉' : '○';
+          eye.title = 'Mostrar/ocultar';
+          eye.addEventListener('click', e => {
+            e.stopPropagation();
+            layer.visible = !layer.visible;
+            eye.className = 'layer-eye' + (layer.visible ? '' : ' off');
+            eye.textContent = layer.visible ? '◉' : '○';
+            this.render();
+          });
+
+          const name = document.createElement('span');
+          name.className = 'layer-name';
+          name.contentEditable = 'true';
+          name.spellcheck = false;
+          name.textContent = layer.name;
+          name.addEventListener('input', () => { layer.name = name.textContent.trim() || layer.name; });
+          name.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); name.blur(); } });
+          name.addEventListener('click', e => e.stopPropagation());
+
+          const opWrap = document.createElement('div');
+          opWrap.className = 'layer-op-wrap';
+          const slider = document.createElement('input');
+          slider.type = 'range'; slider.min = 0; slider.max = 100;
+          slider.value = Math.round(layer.opacity * 100);
+          slider.className = 'layer-op-slider';
+          slider.title = 'Opacidad';
+          const opVal = document.createElement('span');
+          opVal.className = 'layer-op-val';
+          opVal.textContent = slider.value + '%';
+          slider.addEventListener('input', () => { layer.opacity = slider.value / 100; opVal.textContent = slider.value + '%'; this.render(); });
+          slider.addEventListener('change', () => this.commit());
+          slider.addEventListener('click', e => e.stopPropagation());
+          opWrap.append(slider, opVal);
+
+          const acts = document.createElement('div');
+          acts.className = 'layer-actions';
+          const mkBtn = (label, title, cls, cb) => {
+            const b = document.createElement('button');
+            b.className = 'layer-act' + (cls ? ' ' + cls : '');
+            b.textContent = label; b.title = title;
+            b.addEventListener('click', e => { e.stopPropagation(); cb(); });
+            return b;
+          };
+          acts.append(
+            mkBtn('▲', 'Subir capa', '', () => this.moveLayerUp(layer.id)),
+            mkBtn('▼', 'Bajar capa', '', () => this.moveLayerDown(layer.id)),
+            mkBtn('⧉', 'Duplicar capa', '', () => this.duplicateLayer(layer.id)),
+            mkBtn('⊕', 'Combinar con inferior', '', () => this.mergeLayerDown(layer.id)),
+            mkBtn('×', 'Eliminar capa', 'del', () => this.deleteLayer(layer.id)),
+          );
+
+          row.append(eye, name, opWrap, acts);
+          row.addEventListener('click', () => { this.activeLayerId = layer.id; this.renderLayersPanel(); });
+          list.appendChild(row);
+        });
+      }
+
+
+
+
+      groupSelected() {
+        if (this.selectedSet.size < 2) return;
+        const sorted = [...this.selectedSet].sort((a, b) => a - b);
+        const children = sorted.map(i => ({ ...this.shapes[i] }));
+        const group = { type: 'group', children };
+        const insertAt = sorted[0];
+        [...sorted].reverse().forEach(i => this.shapes.splice(i, 1));
+        this.shapes.splice(insertAt, 0, group);
+        this.commit();
+        this.selectedSet.clear();
+        this.selectedSet.add(insertAt);
+        this.hint.textContent = 'Grupo creado · Ctrl+Shift+G=desagrupar · Supr=eliminar · Esc=deseleccionar';
+        this.render();
+      }
+
+      ungroupSelected() {
+        const groupIndices = new Set([...this.selectedSet].filter(i => this.shapes[i]?.type === 'group'));
+        if (!groupIndices.size) return;
+        const newShapes = [];
+        const newSelected = new Set();
+        this.shapes.forEach((s, i) => {
+          if (groupIndices.has(i)) {
+            s.children.forEach(c => { newSelected.add(newShapes.length); newShapes.push(c); });
+          } else {
+            if (this.selectedSet.has(i)) newSelected.add(newShapes.length);
+            newShapes.push(s);
+          }
+        });
+        this.shapes = newShapes;
+        this.commit();
+        this.selectedSet.clear();
+        newSelected.forEach(i => this.selectedSet.add(i));
+        this.hint.textContent = 'Figuras desagrupadas · Esc=deseleccionar';
+        this.render();
+      }
+
+      duplicateSelected() {
+        if (!this.selectedSet.size) return;
+        const dx = this.GRID * 2, dy = this.GRID * 2;
+        const sorted = [...this.selectedSet].sort((a, b) => a - b);
+        const newShapes = sorted.map(i => this.offsetShape(this.shapes[i], dx, dy));
+        const startIdx = this.shapes.length;
+        this.shapes.push(...newShapes);
+        this.commit();
+        this.selectedSet.clear();
+        for (let j = 0; j < newShapes.length; j++) this.selectedSet.add(startIdx + j);
+        this.hint.textContent = `${this.selectedSet.size} figura(s) duplicada(s) · Supr=eliminar · Esc=deseleccionar`;
+        this.render();
+      }
+
+      cancelOp() {
+        this.clicks = []; this.dragging = false; this.dragStart = null;
+        this.selectedSet.clear();
+        this.rubberBand = null;
+        this.updateHint(); this.render();
+      }
+
+
+
+
+      _onKeyDown(e) {
+        if (e.target.tagName === 'INPUT') return;
+        const key = e.key;
+
+        if (e.code === 'Space' && !this.spaceDown && !e.repeat) {
+          e.preventDefault();
+          this.spaceDown = true;
+          this.updateCursor();
+          return;
+        }
+
+        if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 's') { e.preventDefault(); this.doSave(); return; }
+        if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'o') { e.preventDefault(); this.doOpen(); return; }
+        if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'z') { e.preventDefault(); this.undo(); return; }
+        if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'y') { e.preventDefault(); this.redo(); return; }
+        if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'd') { e.preventDefault(); this.duplicateSelected(); return; }
+        if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'l') { e.preventDefault(); this.addLayer(); return; }
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key.toLowerCase() === 'g') { e.preventDefault(); this.groupSelected(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && key.toLowerCase() === 'g') { e.preventDefault(); this.ungroupSelected(); return; }
+        if (key === 'Escape') { this.cancelOp(); return; }
+
+        if ((key === 'Delete' || key === 'Backspace') && this.selectedSet.size > 0) {
+          e.preventDefault();
+          [...this.selectedSet].sort((a, b) => b - a).forEach(i => this.shapes.splice(i, 1));
+          this.commit();
+          this.selectedSet.clear();
+          this.updateHint();
+          this.render();
+          return;
+        }
+
+        const map = {
+          l: 'line', r: 'rect', c: 'circle', t: 'triangle', a: 'arc',
+          v: 'pan', u: 'ruler', e: 'ground', s: 'select'
+        };
+        if (map[key.toLowerCase()] && !e.ctrlKey && !e.metaKey) {
+          this.setTool(map[key.toLowerCase()]);
+          return;
+        }
+
+        if (key === '+' || key === '=') { this.zoomAt(this.canvas.width / 2, this.canvas.height / 2, this.ZOOM_STEP); this.render(); }
+        if (key === '-') { this.zoomAt(this.canvas.width / 2, this.canvas.height / 2, 1 / this.ZOOM_STEP); this.render(); }
+        if (key === '0') { this.resetView(); }
+        if (key === 'Home') { e.preventDefault(); this.goToOrigin(); }
+
+        if (key.toLowerCase() === 'g') {
+          this.snapOn = !this.snapOn;
+          document.getElementById('snapToggle').checked = this.snapOn;
+          document.getElementById('snapLabel').classList.toggle('on', this.snapOn);
+          this.render();
+        }
+
+        if (key.toLowerCase() === 'h') {
+          this.gridVisible = !this.gridVisible;
+          document.getElementById('gridToggleBtn').style.color = this.gridVisible ? '#7eb8f7' : '#4a5568';
+          this.render();
+        }
+      }
+
+      _onKeyUp(e) {
+        if (e.code === 'Space') {
+          this.spaceDown = false;
+          if (this.isPanning && !this.midPan && this.currentTool !== 'pan') {
+            this.isPanning = false; this.panLast = null;
+          }
+          this.updateCursor();
+        }
+      }
+
+
+
+
+      setTool(name) {
+        this.currentTool = name;
+        this.clicks = []; this.dragging = false; this.dragStart = null;
+        document.querySelectorAll('[data-tool]').forEach(b =>
+          b.classList.toggle('active', b.dataset.tool === name)
+        );
+        this.updateHint();
+        this.updateCursor();
+        this.render();
+      }
+
+
+
+
+      checkTbOverflow() {
+        if (this.tbExpanded) return;
+        const tb = document.getElementById('toolbar');
+        this.TB_GROUPS.forEach(id => {
+          const el = document.getElementById(id);
+          el.style.display = 'flex';
+          el.style.visibility = 'hidden';
+        });
+        let anyHidden = false;
+        for (const id of this.TB_GROUPS) {
+          if (tb.scrollWidth <= tb.clientWidth + 1) break;
+          document.getElementById(id).style.display = 'none';
+          anyHidden = true;
+        }
+        this.TB_GROUPS.forEach(id => {
+          const el = document.getElementById(id);
+          if (el.style.display !== 'none') el.style.visibility = '';
+        });
+        const btn = document.getElementById('tbExpandBtn');
+        btn.style.display = anyHidden ? '' : 'none';
+        btn.textContent = '≫';
+      }
+
+
+
+
+      resize() {
+        this.canvas.width = this.wrap.clientWidth;
+        this.canvas.height = this.wrap.clientHeight;
+        if (!this.tbExpanded) this.checkTbOverflow();
+        this.render();
+      }
+
+
+
+
+      getShapesBBox() {
+        if (!this.shapes.length) {
+          const vr = this.visibleRect();
+          return { minX: vr.left, minY: vr.top, maxX: vr.right, maxY: vr.bottom };
+        }
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        const ex = (x, y) => {
+          minX = Math.min(minX, x); minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+        };
+        this.shapes.forEach(s => {
+          switch (s.type) {
+            case 'line': case 'ruler': case 'ground': ex(s.x1, s.y1); ex(s.x2, s.y2); break;
+            case 'rect': ex(s.x, s.y); ex(s.x + s.w, s.y + s.h); break;
+            case 'circle': ex(s.cx - s.r, s.cy - s.r); ex(s.cx + s.r, s.cy + s.r); break;
+            case 'triangle': ex(s.p1.x, s.p1.y); ex(s.p2.x, s.p2.y); ex(s.p3.x, s.p3.y); break;
+            case 'arc': ex(s.cx - s.r, s.cy - s.r); ex(s.cx + s.r, s.cy + s.r); break;
+            case 'group': {
+              const b = this.shapeBBox(s);
+              ex(b.x, b.y); ex(b.x + b.w, b.y + b.h); break;
+            }
+          }
+        });
+        return { minX, minY, maxX, maxY };
+      }
+
+      r2(n) { return Math.round(n * 100) / 100; }
+
+      buildSVGString() {
+        const bbox = this.getShapesBBox();
+        const m = this.EXPORT_MARGIN;
+        const vx = bbox.minX - m, vy = bbox.minY - m;
+        const vw = Math.max(1, bbox.maxX - bbox.minX + m * 2);
+        const vh = Math.max(1, bbox.maxY - bbox.minY + m * 2);
+
+        const lines = [
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${this.r2(vx)} ${this.r2(vy)} ${this.r2(vw)} ${this.r2(vh)}" width="${this.r2(vw)}" height="${this.r2(vh)}">`,
+          `<rect x="${this.r2(vx)}" y="${this.r2(vy)}" width="${this.r2(vw)}" height="${this.r2(vh)}" fill="white"/>`,
+        ];
+
+        const mg = this.GRID * this.GRID_MAJOR;
+        const gx0 = Math.floor(vx / this.GRID) * this.GRID;
+        const gy0 = Math.floor(vy / this.GRID) * this.GRID;
+        let minor = '', major = '';
+        for (let x = gx0; x <= vx + vw; x += this.GRID) {
+          const seg = `<line x1="${this.r2(x)}" y1="${this.r2(vy)}" x2="${this.r2(x)}" y2="${this.r2(vy + vh)}"/>`;
+          if (x % mg === 0) major += seg; else minor += seg;
+        }
+        for (let y = gy0; y <= vy + vh; y += this.GRID) {
+          const seg = `<line x1="${this.r2(vx)}" y1="${this.r2(y)}" x2="${this.r2(vx + vw)}" y2="${this.r2(y)}"/>`;
+          if (y % mg === 0) major += seg; else minor += seg;
+        }
+        lines.push(`<g fill="none" stroke="#ebebeb" stroke-width="0.5">${minor}</g>`);
+        lines.push(`<g fill="none" stroke="#d4d4d4" stroke-width="1">${major}</g>`);
+
+        this.shapes.forEach(s => { const el = this.shapeToSVGEl(s); if (el) lines.push(el); });
+        lines.push('</svg>');
+        return lines.join('\n');
+      }
+
+      shapeToSVGEl(s) {
+        if (s.type === 'group') {
+          return '<g>' + s.children.map(c => this.shapeToSVGEl(c)).join('\n') + '</g>';
+        }
+        const stroke = '#1a2540', sw = 1.5;
+        const base = `fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"`;
+
+        switch (s.type) {
+          case 'line':
+            return `<line x1="${this.r2(s.x1)}" y1="${this.r2(s.y1)}" x2="${this.r2(s.x2)}" y2="${this.r2(s.y2)}" ${base}/>`;
+          case 'rect':
+            return `<rect x="${this.r2(s.x)}" y="${this.r2(s.y)}" width="${this.r2(s.w)}" height="${this.r2(s.h)}" ${base}/>`;
+          case 'circle':
+            return `<circle cx="${this.r2(s.cx)}" cy="${this.r2(s.cy)}" r="${this.r2(s.r)}" ${base}/>`;
+          case 'triangle':
+            return `<polygon points="${this.r2(s.p1.x)},${this.r2(s.p1.y)} ${this.r2(s.p2.x)},${this.r2(s.p2.y)} ${this.r2(s.p3.x)},${this.r2(s.p3.y)}" ${base}/>`;
+          case 'arc': {
+            const { cx, cy, r, sa, ea, ccw } = s;
+            const x1 = cx + r * Math.cos(sa), y1 = cy + r * Math.sin(sa);
+            const x2 = cx + r * Math.cos(ea), y2 = cy + r * Math.sin(ea);
+            const TWO_PI = Math.PI * 2;
+            const span = ccw ? ((sa - ea) % TWO_PI + TWO_PI) % TWO_PI : ((ea - sa) % TWO_PI + TWO_PI) % TWO_PI;
+            const large = span > Math.PI ? 1 : 0;
+            const sweep = ccw ? 0 : 1;
+            const d = `M ${this.r2(x1)} ${this.r2(y1)} A ${this.r2(r)} ${this.r2(r)} 0 ${large} ${sweep} ${this.r2(x2)} ${this.r2(y2)}`;
+            return `<path d="${d}" ${base}/>`;
+          }
+          case 'ground': {
+            const dx = s.x2 - s.x1, dy = s.y2 - s.y1, len = Math.hypot(dx, dy);
+            if (len < 1) return '';
+            const ux = dx / len, uy = dy / len;
+            let px = -uy, py = ux;
+            if (py < 0) { px = -px; py = -py; }
+            const hx = (-ux + px) * Math.SQRT1_2, hy = (-uy + py) * Math.SQRT1_2;
+            const hm = Math.hypot(hx, hy);
+            const hnx = hx / hm, hny = hy / hm;
+            const hLen = 10, spacing = 14;
+            const col = '#1a2540';
+            const gb = `fill="none" stroke="${col}" stroke-linecap="round"`;
+            const segs = [`<line x1="${this.r2(s.x1)}" y1="${this.r2(s.y1)}" x2="${this.r2(s.x2)}" y2="${this.r2(s.y2)}" ${gb} stroke-width="1.5"/>`];
+            let t = spacing * 0.5;
+            while (t <= len) {
+              const bx = s.x1 + ux * t, by = s.y1 + uy * t;
+              segs.push(`<line x1="${this.r2(bx)}" y1="${this.r2(by)}" x2="${this.r2(bx + hnx * hLen)}" y2="${this.r2(by + hny * hLen)}" ${gb} stroke-width="1"/>`);
+              t += spacing;
+            }
+            return segs.join('\n');
+          }
+          case 'ruler': {
+            const dx = s.x2 - s.x1, dy = s.y2 - s.y1, len = Math.hypot(dx, dy);
+            if (len < 1) return '';
+            const ux = dx / len, uy = dy / len, px = -uy, py = ux, tH = 8;
+            const dist = len * this.unitScale;
+            const label = dist < 100 ? dist.toFixed(2) + ' cm' : (dist / 100).toFixed(3) + ' m';
+            const mx = (s.x1 + s.x2) / 2, my = (s.y1 + s.y2) / 2;
+            const lx = mx + px * (tH * 2 + 4), ly = my + py * (tH * 2 + 4);
+            const col = '#b08800';
+            const rb = `fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round"`;
+            return [
+              `<line x1="${this.r2(s.x1)}" y1="${this.r2(s.y1)}" x2="${this.r2(s.x2)}" y2="${this.r2(s.y2)}" ${rb}/>`,
+              `<line x1="${this.r2(s.x1 + px * tH)}" y1="${this.r2(s.y1 + py * tH)}" x2="${this.r2(s.x1 - px * tH)}" y2="${this.r2(s.y1 - py * tH)}" ${rb}/>`,
+              `<line x1="${this.r2(s.x2 + px * tH)}" y1="${this.r2(s.y2 + py * tH)}" x2="${this.r2(s.x2 - px * tH)}" y2="${this.r2(s.y2 - py * tH)}" ${rb}/>`,
+              `<text x="${this.r2(lx)}" y="${this.r2(ly)}" text-anchor="middle" dominant-baseline="middle" font-family="'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="${col}">${label}</text>`,
+            ].join('\n');
+          }
+        }
+        return '';
+      }
+
+      svgToCanvas(svgStr, w, h, dpr = 4) {
+        return new Promise(resolve => {
+          const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.onload = () => {
+            const oc = document.createElement('canvas');
+            oc.width = Math.ceil(w * dpr);
+            oc.height = Math.ceil(h * dpr);
+            oc.getContext('2d').drawImage(img, 0, 0, oc.width, oc.height);
+            URL.revokeObjectURL(url);
+            resolve(oc);
+          };
+          img.src = url;
+        });
+      }
+
+      dlBlob(name, mime, content) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+        a.download = name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      }
+
+      dlDataURL(name, dataURL) {
+        const a = document.createElement('a');
+        a.href = dataURL; a.download = name; a.click();
+      }
+
+      doSave() {
+        const data = {
+          version: 2, GRID: this.GRID, unitScale: this.unitScale,
+          layers: this.layers, shapes: this.shapes
+        };
+        this.dlBlob('microcad.mcad', 'application/json', JSON.stringify(data, null, 2));
+      }
+
+      doOpen() {
+        document.getElementById('fileInput').click();
+      }
+
+      _onFileInput(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          try {
+            const data = JSON.parse(ev.target.result);
+            this.shapes = (data.shapes || []);
+            if (data.GRID) { this.GRID = data.GRID; document.getElementById('gridSize').value = this.GRID; }
+            if (data.unitScale) { this.unitScale = data.unitScale; document.getElementById('rulerScale').value = this.unitScale; }
+            if (data.layers && data.layers.length) {
+              this.layers = data.layers;
+              this.nextLayerId = Math.max(...this.layers.map(l => l.id)) + 1;
+              this.activeLayerId = this.layers[this.layers.length - 1].id;
+            } else {
+              this.layers = [{ id: 1, name: 'Capa 1', opacity: 1, visible: true }];
+              this.nextLayerId = 2; this.activeLayerId = 1;
+              this.shapes.forEach(s => { if (!s.layerId) s.layerId = 1; });
+            }
+            this.history = [{ shapes: [], layers: JSON.parse(JSON.stringify(this.layers)) }];
+            this.histIdx = 0;
+            this.commit();
+            this.renderLayersPanel();
+            this.cancelOp();
+          } catch (err) { alert('Error al abrir el archivo:\n' + err.message); }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      }
+
+      async doExportSVG() {
+        this.dlBlob('microcad.svg', 'image/svg+xml', this.buildSVGString());
+      }
+
+      async doExportPNG() {
+        const svgStr = this.buildSVGString();
+        const bbox = this.getShapesBBox();
+        const m = this.EXPORT_MARGIN;
+        const vw = Math.max(1, bbox.maxX - bbox.minX + m * 2);
+        const vh = Math.max(1, bbox.maxY - bbox.minY + m * 2);
+        const oc = await this.svgToCanvas(svgStr, vw, vh);
+        this.dlDataURL('microcad.png', oc.toDataURL('image/png'));
+      }
+
+      async doExportPDF() {
+        if (!window.jspdf) { alert('jsPDF no disponible.'); return; }
+        const { jsPDF } = window.jspdf;
+        const svgStr = this.buildSVGString();
+        const bbox = this.getShapesBBox();
+        const m = this.EXPORT_MARGIN;
+        const vw = Math.max(1, bbox.maxX - bbox.minX + m * 2);
+        const vh = Math.max(1, bbox.maxY - bbox.minY + m * 2);
+        const oc = await this.svgToCanvas(svgStr, vw, vh);
+        const pxToPt = 72 / 96;
+        const pw = vw * pxToPt, ph = vh * pxToPt;
+        const pdf = new jsPDF({ orientation: vw >= vh ? 'l' : 'p', unit: 'pt', format: [pw, ph] });
+        pdf.addImage(oc.toDataURL('image/png'), 'PNG', 0, 0, pw, ph);
+        pdf.save('microcad.pdf');
+      }
+
+      saveDraft() {
+        try {
+          localStorage.setItem(this.DRAFT_KEY, JSON.stringify({
+            version: 2, GRID: this.GRID, unitScale: this.unitScale,
+            layers: this.layers, shapes: this.shapes,
+          }));
+          this.draftEl.textContent = '● borrador guardado';
+          this.draftEl.classList.add('show');
+          clearTimeout(this.draftFadeTimer);
+          this.draftFadeTimer = setTimeout(() => this.draftEl.classList.remove('show'), 2000);
+        } catch (e) { }
+      }
+
+      loadDraft() {
+        try {
+          const raw = localStorage.getItem(this.DRAFT_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (!data.shapes || !data.shapes.length) return;
+          if (!confirm('Se encontró un borrador guardado. ¿Deseas restaurarlo?')) return;
+          this.shapes = data.shapes;
+          if (data.GRID) { this.GRID = data.GRID; document.getElementById('gridSize').value = this.GRID; }
+          if (data.unitScale) { this.unitScale = data.unitScale; document.getElementById('rulerScale').value = this.unitScale; }
+          if (data.layers && data.layers.length) {
+            this.layers = data.layers;
+            this.nextLayerId = Math.max(...this.layers.map(l => l.id)) + 1;
+            this.activeLayerId = this.layers[this.layers.length - 1].id;
+          } else {
+            this.layers = [{ id: 1, name: 'Capa 1', opacity: 1, visible: true }];
+            this.nextLayerId = 2; this.activeLayerId = 1;
+            this.shapes.forEach(s => { if (!s.layerId) s.layerId = 1; });
+          }
+          this.history = [{ shapes: [], layers: JSON.parse(JSON.stringify(this.layers)) }];
+          this.histIdx = 0;
+          this.commit(); this.renderLayersPanel(); this.cancelOp();
+        } catch (e) { }
+      }
+    }
+
+
+    const app = new MicroCAD({
+      GRID: 20, GRID_MAJOR: 5,
+      MIN_SCALE: 0.04, MAX_SCALE: 80, ZOOM_STEP: 1.25,
+      EXPORT_MARGIN: 40, DRAFT_KEY: 'microcad_draft',
+    });
+    app.init();
+  </script>
+</body>
+
+</html>
