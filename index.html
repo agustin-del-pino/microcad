@@ -2439,17 +2439,214 @@
       async doExportPDF() {
         if (!window.jspdf) { alert('jsPDF no disponible.'); return; }
         const { jsPDF } = window.jspdf;
-        const svgStr = this.buildSVGString();
+
         const bbox = this.getShapesBBox();
-        const m = this.EXPORT_MARGIN;
-        const vw = Math.max(1, bbox.maxX - bbox.minX + m * 2);
-        const vh = Math.max(1, bbox.maxY - bbox.minY + m * 2);
-        const oc = await this.svgToCanvas(svgStr, vw, vh);
-        const pxToPt = 72 / 96;
-        const pw = vw * pxToPt, ph = vh * pxToPt;
-        const pdf = new jsPDF({ orientation: vw >= vh ? 'l' : 'p', unit: 'pt', format: [pw, ph] });
-        pdf.addImage(oc.toDataURL('image/png'), 'PNG', 0, 0, pw, ph);
+        const m    = this.EXPORT_MARGIN;
+        const ox   = bbox.minX - m;   // world origin for PDF
+        const oy   = bbox.minY - m;
+        const vw   = Math.max(1, bbox.maxX - bbox.minX + m * 2);
+        const vh   = Math.max(1, bbox.maxY - bbox.minY + m * 2);
+
+        // Scale: target 200 DPI, capped at A1 (2384 pt ≈ 84 cm)
+        const A1_PT = 2384;
+        const sf    = Math.min(200 / 96, A1_PT / Math.max(vw, vh));
+        const pw    = vw * sf;
+        const ph    = vh * sf;
+
+        // World → PDF coordinate helpers
+        const tx = wx => (wx - ox) * sf;
+        const ty = wy => (wy - oy) * sf;
+
+        const pdf = new jsPDF({ orientation: pw >= ph ? 'l' : 'p', unit: 'pt', format: [pw, ph] });
+
+        // White background
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(0, 0, pw, ph, 'F');
+
+        // Grid lines (only if visible)
+        if (this.gridVisible) {
+          const { GRID, GRID_MAJOR } = this;
+          const x0 = Math.floor(bbox.minX / GRID) * GRID;
+          const y0 = Math.floor(bbox.minY / GRID) * GRID;
+          const x1 = Math.ceil(bbox.maxX / GRID) * GRID;
+          const y1 = Math.ceil(bbox.maxY / GRID) * GRID;
+
+          // minor grid
+          pdf.setDrawColor(220, 220, 220);
+          pdf.setLineWidth(0.15);
+          for (let gx = x0; gx <= x1; gx += GRID) {
+            if ((Math.round(gx / GRID) % GRID_MAJOR) === 0) continue;
+            pdf.line(tx(gx), ty(bbox.minY - m * 0.5), tx(gx), ty(bbox.maxY + m * 0.5));
+          }
+          for (let gy = y0; gy <= y1; gy += GRID) {
+            if ((Math.round(gy / GRID) % GRID_MAJOR) === 0) continue;
+            pdf.line(tx(bbox.minX - m * 0.5), ty(gy), tx(bbox.maxX + m * 0.5), ty(gy));
+          }
+          // major grid
+          pdf.setDrawColor(190, 190, 190);
+          pdf.setLineWidth(0.35);
+          for (let gx = x0; gx <= x1; gx += GRID) {
+            if ((Math.round(gx / GRID) % GRID_MAJOR) !== 0) continue;
+            pdf.line(tx(gx), ty(bbox.minY - m * 0.5), tx(gx), ty(bbox.maxY + m * 0.5));
+          }
+          for (let gy = y0; gy <= y1; gy += GRID) {
+            if ((Math.round(gy / GRID) % GRID_MAJOR) !== 0) continue;
+            pdf.line(tx(bbox.minX - m * 0.5), ty(gy), tx(bbox.maxX + m * 0.5), ty(gy));
+          }
+        }
+
+        // Shapes, layer by layer
+        this.layers.forEach(layer => {
+          if (!layer.visible) return;
+          this.shapes.forEach(s => {
+            if ((s.layerId || 1) !== layer.id) return;
+            this._drawShapePDF(pdf, s, layer, tx, ty, sf);
+          });
+        });
+
         pdf.save('microcad.pdf');
+      }
+
+      // ── Native jsPDF vector drawing ────────────────────────────────────────
+      _drawShapePDF(pdf, s, layer, tx, ty, sf) {
+        if (s.type === 'group') {
+          s.children.forEach(c => this._drawShapePDF(pdf, c, layer, tx, ty, sf));
+          return;
+        }
+
+        // Layer opacity via GState
+        const opacity = layer.opacity ?? 1;
+        try {
+          pdf.saveGraphicsState();
+          const gs = new pdf.GState({ opacity, 'stroke-opacity': opacity });
+          pdf.setGState(gs);
+        } catch (_) { /* GState not available in all builds */ }
+
+        // Stroke colour: dark ink on white paper
+        pdf.setDrawColor(20, 30, 55);
+        pdf.setLineCap('round');
+        pdf.setLineJoin('round');
+
+        switch (s.type) {
+          case 'line': {
+            pdf.setLineWidth(0.75);
+            pdf.line(tx(s.x1), ty(s.y1), tx(s.x2), ty(s.y2));
+            break;
+          }
+          case 'rect': {
+            pdf.setLineWidth(0.75);
+            pdf.rect(tx(s.x), ty(s.y), s.w * sf, s.h * sf, 'S');
+            break;
+          }
+          case 'circle': {
+            if (s.r < 0.01) break;
+            pdf.setLineWidth(0.75);
+            pdf.circle(tx(s.cx), ty(s.cy), s.r * sf, 'S');
+            break;
+          }
+          case 'triangle': {
+            const p1x = tx(s.p1.x), p1y = ty(s.p1.y);
+            const p2x = tx(s.p2.x), p2y = ty(s.p2.y);
+            const p3x = tx(s.p3.x), p3y = ty(s.p3.y);
+            pdf.setLineWidth(0.75);
+            pdf.lines(
+              [[p2x - p1x, p2y - p1y], [p3x - p2x, p3y - p2y]],
+              p1x, p1y, [1, 1], 'S', true
+            );
+            break;
+          }
+          case 'arc': {
+            if (!s.r || s.r < 0.01) break;
+            // Approximate arc as polyline (≤ 7.5° per step)
+            let span;
+            if (!s.ccw) {
+              span = s.ea - s.sa;
+              while (span < 0) span += 2 * Math.PI;
+              while (span >= 2 * Math.PI) span -= 2 * Math.PI;
+            } else {
+              span = s.ea - s.sa;
+              while (span > 0) span -= 2 * Math.PI;
+              while (span <= -2 * Math.PI) span += 2 * Math.PI;
+            }
+            const steps = Math.max(12, Math.ceil(Math.abs(span) / (Math.PI / 24)));
+            const pts = [];
+            for (let i = 0; i <= steps; i++) {
+              const a = s.sa + (i / steps) * span;
+              pts.push([tx(s.cx + s.r * Math.cos(a)), ty(s.cy + s.r * Math.sin(a))]);
+            }
+            const segs = [];
+            for (let i = 1; i < pts.length; i++) {
+              segs.push([pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]]);
+            }
+            pdf.setLineWidth(0.75);
+            pdf.lines(segs, pts[0][0], pts[0][1], [1, 1], 'S', false);
+            break;
+          }
+          case 'ground': {
+            const dx  = s.x2 - s.x1, dy = s.y2 - s.y1;
+            const len = Math.hypot(dx, dy);
+            if (len < 1) break;
+            const ux = dx / len, uy = dy / len;
+            let px = -uy, py = ux;
+            if (py < 0) { px = -px; py = -py; }
+            const hx = (-ux + px) * Math.SQRT1_2;
+            const hy = (-uy + py) * Math.SQRT1_2;
+            const hMag = Math.hypot(hx, hy);
+            const hnx = hx / hMag, hny = hy / hMag;
+            const hLen = 10, spacing = 14;
+
+            pdf.setLineWidth(0.75);
+            pdf.line(tx(s.x1), ty(s.y1), tx(s.x2), ty(s.y2));
+
+            pdf.setLineWidth(0.4);
+            for (let t = spacing * 0.5; t <= len; t += spacing) {
+              const bx = s.x1 + ux * t, by = s.y1 + uy * t;
+              pdf.line(tx(bx), ty(by), tx(bx + hnx * hLen), ty(by + hny * hLen));
+            }
+            break;
+          }
+          case 'ruler': {
+            const dx  = s.x2 - s.x1, dy = s.y2 - s.y1;
+            const len = Math.hypot(dx, dy);
+            if (len < 1) break;
+            const ux = dx / len, uy = dy / len;
+            const rpx = -uy, rpy = ux;
+            const tickH = 8;  // world units
+
+            pdf.setDrawColor(160, 100, 0);
+            pdf.setLineWidth(0.5);
+            pdf.line(tx(s.x1), ty(s.y1), tx(s.x2), ty(s.y2));
+
+            [[s.x1, s.y1], [s.x2, s.y2]].forEach(([qx, qy]) => {
+              pdf.line(
+                tx(qx + rpx * tickH), ty(qy + rpy * tickH),
+                tx(qx - rpx * tickH), ty(qy - rpy * tickH)
+              );
+            });
+
+            const dist = len * this.unitScale;
+            const label = dist < 100
+              ? dist.toFixed(2) + ' cm'
+              : (dist / 100).toFixed(3) + ' m';
+
+            const mx = (s.x1 + s.x2) / 2;
+            const my = (s.y1 + s.y2) / 2;
+            const offset = tickH * 2 + 3;
+            const angleDeg = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            pdf.setFontSize(8);
+            pdf.setTextColor(120, 70, 0);
+            try {
+              pdf.text(label, tx(mx + rpx * offset), ty(my + rpy * offset),
+                { angle: -angleDeg, align: 'center' });
+            } catch (_) {
+              pdf.text(label, tx(mx), ty(my));
+            }
+            break;
+          }
+        }
+
+        try { pdf.restoreGraphicsState(); } catch (_) { /* ignore */ }
       }
 
       saveDraft() {
