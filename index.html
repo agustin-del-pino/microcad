@@ -24,6 +24,7 @@
       flex-direction: column;
     }
 
+    /* ── TOOLBAR ───────────────────────────────────────────── */
     #toolbar {
       display: flex;
       align-items: center;
@@ -260,6 +261,7 @@
       opacity: 1;
     }
 
+    /* ── LAYERS PANEL ──────────────────────────────────────────── */
     #layers-panel {
       position: absolute;
       bottom: 48px;
@@ -465,9 +467,11 @@
       color: #ff7070;
     }
 
+    /* ── BRAND DROPDOWN ────────────────────────────────────────── */
     #brand-wrap {
       position: relative;
       flex-shrink: 0;
+      /* Fill full toolbar height so there's no gap between text and menu */
       align-self: stretch;
       display: flex;
       align-items: center;
@@ -490,6 +494,7 @@
       background: #22262f;
       border: 1px solid #2e3340;
       border-radius: 0 6px 6px 6px;
+      /* Visual breathing room via padding instead of top offset */
       padding: 6px 0 5px;
       z-index: 400;
       box-shadow: 0 6px 28px rgba(0, 0, 0, .65);
@@ -562,6 +567,7 @@
       border-radius: 3px;
     }
 
+    /* ── TOOLBAR COLLAPSE ───────────────────────────────────────── */
     .tb-group {
       display: flex;
       align-items: center;
@@ -588,6 +594,7 @@
       color: #b0d8ff;
     }
 
+    /* ── CANVAS ─────────────────────────────────────────────── */
     #canvas-wrap {
       flex: 1;
       overflow: hidden;
@@ -599,6 +606,7 @@
       cursor: crosshair;
     }
 
+    /* ── HINT BAR ───────────────────────────────────────────── */
     #hint {
       position: absolute;
       bottom: 12px;
@@ -614,6 +622,7 @@
       backdrop-filter: blur(4px);
     }
 
+    /* ── Context menus ────────────────────────────────────────────────── */
     #ctx-menu, #ctx-menu-canvas {
       position: fixed;
       display: none;
@@ -651,11 +660,157 @@
       background: #2e3650;
       margin: 3px 0;
     }
+
+    /* ── Layers panel footer ──────────────────────────────────────────── */
+    #layers-footer {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 5px 8px;
+      border-top: 1px solid #2e3340;
+      background: rgba(20, 24, 36, .5);
+    }
+
+    #layers-footer .icon-btn {
+      width: 26px;
+      height: 26px;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    #layers-footer .lp-sep {
+      flex: 1;
+    }
+
+    #layers-footer .zoom-group {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    #layers-footer #zoomDisplay {
+      font-size: 11px;
+      min-width: 38px;
+      text-align: center;
+      color: #8a93a8;
+      cursor: pointer;
+      padding: 0 2px;
+    }
+
+    #layers-footer #zoomDisplay:hover {
+      color: #c8d8f0;
+    }
+
+    /* ── Array Circular panel ─────────────────────────────────────────── */
+    #array-panel {
+      position: fixed;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a2035;
+      border: 1px solid #3a4a6a;
+      border-radius: 10px;
+      padding: 14px 18px 12px;
+      z-index: 9000;
+      display: none;
+      box-shadow: 0 6px 28px rgba(0,0,0,.55);
+      min-width: 300px;
+      color: #c8d8f0;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    #array-panel.show { display: block; }
+    #array-panel h3 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7eb8f7;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .ap-grid {
+      display: grid;
+      grid-template-columns: auto 1fr auto 1fr;
+      gap: 7px 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .ap-grid label {
+      color: #8899bb;
+      white-space: nowrap;
+    }
+    .ap-grid input[type="number"] {
+      background: #0f1626;
+      border: 1px solid #3a4a6a;
+      border-radius: 5px;
+      color: #c8d8f0;
+      padding: 4px 7px;
+      font-size: 12px;
+      width: 100%;
+      outline: none;
+    }
+    .ap-grid input[type="number"]:focus {
+      border-color: #7eb8f7;
+    }
+    .ap-pick-btn {
+      grid-column: 3 / 5;
+      background: #243050;
+      border: 1px solid #3a4a6a;
+      border-radius: 5px;
+      color: #7eb8f7;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background .15s;
+    }
+    .ap-pick-btn:hover { background: #2e3e60; }
+    .ap-pick-btn.picking { background: #1a3a2a; border-color: #4caf80; color: #4caf80; }
+    .ap-pick-row {
+      grid-column: 1 / 5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .ap-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+    .ap-btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: 1px solid #3a4a6a;
+      background: #243050;
+      color: #c8d8f0;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .ap-btn:hover { background: #2e3e60; }
+    .ap-btn.primary {
+      background: #2a5aaa;
+      border-color: #4a7acc;
+      color: #fff;
+    }
+    .ap-btn.primary:hover { background: #3468c0; }
+    .ap-hint {
+      font-size: 11px;
+      color: #5a6a8a;
+      margin-top: 6px;
+      min-height: 16px;
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- Context menu -->
   <div id="ctx-menu">
     <div class="ctx-item" data-action="copy">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -675,12 +830,18 @@
       Flip Vertical
     </div>
     <div class="ctx-sep"></div>
+    <div class="ctx-item" data-action="arrayCircular">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none"/><circle cx="20.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="3.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+      Array Circular
+    </div>
+    <div class="ctx-sep"></div>
     <div class="ctx-item" data-action="delete" style="color:#f87171">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       Eliminar <span class="ctx-kbd">Supr</span>
     </div>
   </div>
 
+  <!-- Empty-canvas context menu -->
   <div id="ctx-menu-canvas">
     <div class="ctx-item" data-action="undo">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
@@ -710,7 +871,37 @@
     </div>
   </div>
 
+  <!-- Array Circular panel -->
+  <div id="array-panel">
+    <h3>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="3" r="1.8" fill="currentColor" stroke="none"/><circle cx="20.5" cy="15.5" r="1.8" fill="currentColor" stroke="none"/><circle cx="3.5" cy="15.5" r="1.8" fill="currentColor" stroke="none"/></svg>
+      Array Circular (Polar Array)
+    </h3>
+    <div class="ap-grid">
+      <label>Centro X</label>
+      <input type="number" id="ap-cx" value="0" step="1">
+      <label>Centro Y</label>
+      <input type="number" id="ap-cy" value="0" step="1">
+      <div class="ap-pick-row">
+        <button class="ap-pick-btn" id="ap-pick-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/></svg>
+          Elegir en canvas
+        </button>
+      </div>
+      <label>Cantidad</label>
+      <input type="number" id="ap-n" value="6" min="2" max="360" step="1">
+      <label>Ángulo total</label>
+      <input type="number" id="ap-angle" value="360" min="-360" max="360" step="1">
+    </div>
+    <p class="ap-hint" id="ap-hint">Incluye la figura original. Ej: 6 copias cada 60°.</p>
+    <div class="ap-actions">
+      <button class="ap-btn" id="ap-cancel">Cancelar</button>
+      <button class="ap-btn primary" id="ap-apply">Aplicar</button>
+    </div>
+  </div>
+
   <div id="toolbar">
+    <!-- Brand + dropdown menu -->
     <div id="brand-wrap">
       <span class="brand">MicroCAD <span class="brand-caret">▾</span></span>
       <div id="brand-menu">
@@ -748,6 +939,7 @@
 
     <div class="sep"></div>
 
+    <!-- Drawing tools -->
     <button class="tool-btn active" data-tool="line" title="Línea (L)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="4" y1="20" x2="20" y2="4" />
@@ -778,6 +970,12 @@
       </svg>
       Arco
     </button>
+    <button class="tool-btn" data-tool="polygon" title="Polígono / Polilínea (P)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12,3 21,9 17,20 7,20 3,9" />
+      </svg>
+      Polígono
+    </button>
     <button class="tool-btn" data-tool="ground" title="Terreno / Apoyo (E)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
         <line x1="3" y1="10" x2="21" y2="10" />
@@ -801,9 +999,18 @@
       </svg>
       Regla
     </button>
+    <button class="tool-btn" data-tool="angledim" title="Ángulo — medir ángulo (Q)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="20" x2="20" y2="20"/>
+        <line x1="4" y1="20" x2="14" y2="5"/>
+        <path d="M10 20 A8 8 0 0 1 7.2 13.5" fill="none"/>
+      </svg>
+      Ángulo
+    </button>
 
     <div class="tb-group" id="tbg-edit">
       <div class="sep"></div>
+      <!-- Group / Ungroup -->
       <button class="icon-btn" id="groupBtn" title="Agrupar selección (Ctrl+G)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
           stroke-linejoin="round">
@@ -820,18 +1027,9 @@
           <path d="M6 8V6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v2" />
         </svg>
       </button>
-      <div class="sep"></div>
-      <button class="icon-btn" id="gridToggleBtn" title="Mostrar/ocultar grilla (H)" style="color:#7eb8f7">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="3" width="18" height="18" />
-          <line x1="3" y1="9" x2="21" y2="9" />
-          <line x1="3" y1="15" x2="21" y2="15" />
-          <line x1="9" y1="3" x2="9" y2="21" />
-          <line x1="15" y1="3" x2="15" y2="21" />
-        </svg>
-      </button>
     </div>
 
+    <!-- Select tool -->
     <button class="tool-btn" data-tool="select" title="Seleccionar figura (S) · Supr para eliminar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
         stroke-linejoin="round">
@@ -840,6 +1038,7 @@
       Selec.
     </button>
 
+    <!-- Pan tool -->
     <button class="tool-btn" data-tool="pan"
       title="Mover canvas (V) · también: Rueda=zoom, Botón central=pan, Espacio+arrastrar=pan">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -882,6 +1081,7 @@
 
     <div class="sep"></div>
 
+    <!-- Undo — always visible -->
     <button class="icon-btn" id="undoBtn" title="Deshacer (Ctrl+Z)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
         stroke-linejoin="round">
@@ -890,46 +1090,16 @@
       </svg>
     </button>
 
-    <div class="tb-group" id="tbg-zoom">
-      <button class="icon-btn" id="clearBtn" title="Limpiar todo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6" />
-          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-          <path d="M10 11v6M14 11v6" />
-          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-        </svg>
-      </button>
-      <div class="sep"></div>
-      <div class="zoom-group">
-        <button class="icon-btn" id="zoomOutBtn" title="Alejar (-)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            <line x1="8" y1="11" x2="14" y2="11" />
-          </svg>
-        </button>
-        <span id="zoomDisplay" title="Clic para resetear vista (0)">100%</span>
-        <button class="icon-btn" id="zoomInBtn" title="Acercar (+)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            <line x1="11" y1="8" x2="11" y2="14" />
-            <line x1="8" y1="11" x2="14" y2="11" />
-          </svg>
-        </button>
-      </div>
-      <button class="icon-btn" id="originBtn" title="Ir al origen (0,0) — tecla Home">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3" />
-          <line x1="12" y1="2" x2="12" y2="6" />
-          <line x1="12" y1="18" x2="12" y2="22" />
-          <line x1="2" y1="12" x2="6" y2="12" />
-          <line x1="18" y1="12" x2="22" y2="12" />
-        </svg>
-      </button>
-    </div>
+    <!-- Clear -->
+    <button class="icon-btn" id="clearBtn" title="Limpiar todo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+        <path d="M10 11v6M14 11v6" />
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+      </svg>
+    </button>
 
     <button id="tbExpandBtn" title="Mostrar herramientas colapsados">≫</button>
     <span id="status">X:&nbsp;–&nbsp;&nbsp;Y:&nbsp;–</span>
@@ -945,11 +1115,52 @@
         <button id="addLayerBtn" title="Nueva capa (Ctrl+L)">+</button>
       </div>
       <div id="layers-list"></div>
+      <div id="layers-footer">
+        <button class="icon-btn" id="gridToggleBtn" title="Mostrar/ocultar grilla (H)" style="color:#7eb8f7">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="18" height="18" />
+            <line x1="3" y1="9" x2="21" y2="9" />
+            <line x1="3" y1="15" x2="21" y2="15" />
+            <line x1="9" y1="3" x2="9" y2="21" />
+            <line x1="15" y1="3" x2="15" y2="21" />
+          </svg>
+        </button>
+        <div class="lp-sep"></div>
+        <div class="zoom-group">
+          <button class="icon-btn" id="zoomOutBtn" title="Alejar (-)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+          </button>
+          <span id="zoomDisplay" title="Clic para resetear vista (0)">100%</span>
+          <button class="icon-btn" id="zoomInBtn" title="Acercar (+)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="11" y1="8" x2="11" y2="14" />
+              <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+          </button>
+        </div>
+        <button class="icon-btn" id="originBtn" title="Ir al origen (0,0) — tecla Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <line x1="12" y1="2" x2="12" y2="6" />
+            <line x1="12" y1="18" x2="12" y2="22" />
+            <line x1="2" y1="12" x2="6" y2="12" />
+            <line x1="18" y1="12" x2="22" y2="12" />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
     class MicroCAD {
+
       constructor(cfg = {}) {
         this.GRID = cfg.GRID ?? 20;
         this.GRID_MAJOR = cfg.GRID_MAJOR ?? 5;
@@ -958,7 +1169,7 @@
         this.ZOOM_STEP = cfg.ZOOM_STEP ?? 1.25;
         this.EXPORT_MARGIN = cfg.EXPORT_MARGIN ?? 40;
         this.DRAFT_KEY = cfg.DRAFT_KEY ?? 'microcad_draft';
-        this.TB_GROUPS = cfg.TB_GROUPS ?? ['tbg-zoom', 'tbg-settings', 'tbg-edit'];
+        this.TB_GROUPS = cfg.TB_GROUPS ?? ['tbg-settings', 'tbg-edit'];
 
         this.viewX = 0; this.viewY = 0; this.scale = 1;
 
@@ -991,6 +1202,10 @@
         this.rotateSnap        = null;
         this.rotateStartAngle  = 0;
         this.rotateCurrentAngle = 0;
+
+        this.arrayPickingCenter  = false;
+        this.polyLastClickTime   = 0;
+
         this.isPanning = false;
         this.panLast = null;
         this.spaceDown = false;
@@ -1008,6 +1223,8 @@
           pan: ['Arrastra para mover el canvas · Rueda del mouse = zoom'],
           ruler: ['Clic y arrastra para medir una distancia'],
           ground: ['Clic y arrastra para definir la línea de terreno'],
+          angledim: ['Clic en el vértice del ángulo', 'Clic en el extremo del primer brazo', 'Clic en el extremo del segundo brazo'],
+          polygon: ['Clic para agregar vértices · Enter=cerrar · Doble clic=cerrar · Esc=cancelar'],
           select: ['Clic = seleccionar · Shift+clic = agregar · Arrastra vacío = selección múltiple'],
         };
       }
@@ -1035,16 +1252,25 @@
 
       _bindEvents() {
         const { canvas } = this;
+
+
         document.querySelectorAll('[data-tool]').forEach(btn =>
           btn.addEventListener('click', () => this.setTool(btn.dataset.tool))
         );
-        canvas.addEventListener('mousemove', e => this._onMouseMove(e));
+
+
         canvas.addEventListener('mouseleave', e => this._onMouseLeave(e));
         canvas.addEventListener('mousedown', e => this._onMouseDown(e));
-        canvas.addEventListener('mouseup', e => this._onMouseUp(e));
+        // mousemove and mouseup on document so drags work even when the pointer
+        // leaves the canvas boundary mid-drag
+        document.addEventListener('mousemove', e => this._onMouseMove(e));
+        document.addEventListener('mouseup',   e => this._onMouseUp(e));
+        // Attach to canvas-wrap so right-clicks on any child (canvas, hint, overlays) are caught
         this.wrap.addEventListener('contextmenu', e => {
           e.preventDefault();
           e.stopPropagation();
+
+          // Map client coords → world coords using the canvas bounding rect
           const r   = canvas.getBoundingClientRect();
           const sx  = e.clientX - r.left;
           const sy  = e.clientY - r.top;
@@ -1064,17 +1290,25 @@
           }
         });
         canvas.addEventListener('wheel', e => this._onWheel(e), { passive: false });
+
+
         document.addEventListener('keydown', e => this._onKeyDown(e));
         document.addEventListener('keyup', e => this._onKeyUp(e));
+
+
         document.getElementById('snapToggle').addEventListener('change', e => {
           this.snapOn = e.target.checked;
           document.getElementById('snapLabel').classList.toggle('on', this.snapOn);
           this.render();
         });
+
+
         document.getElementById('gridSize').addEventListener('change', e => {
           this.GRID = parseInt(e.target.value, 10);
           this.render();
         });
+
+
         document.getElementById('rulerScale').addEventListener('change', e => {
           const v = parseFloat(e.target.value);
           if (v > 0) { this.unitScale = v; this.render(); }
@@ -1083,27 +1317,45 @@
           const v = parseFloat(e.target.value);
           if (v > 0) { this.unitScale = v; this.render(); }
         });
+
+
         document.getElementById('undoBtn').addEventListener('click', () => this.undo());
+
+
         document.getElementById('clearBtn').addEventListener('click', () => this.clearAll());
+
+
         document.getElementById('zoomInBtn').addEventListener('click', () => { this.zoomAt(this.canvas.width / 2, this.canvas.height / 2, this.ZOOM_STEP); this.render(); });
         document.getElementById('zoomOutBtn').addEventListener('click', () => { this.zoomAt(this.canvas.width / 2, this.canvas.height / 2, 1 / this.ZOOM_STEP); this.render(); });
         document.getElementById('zoomDisplay').addEventListener('click', () => this.resetView());
         document.getElementById('originBtn').addEventListener('click', () => this.goToOrigin());
+
+
         document.getElementById('gridToggleBtn').addEventListener('click', () => {
           this.gridVisible = !this.gridVisible;
           document.getElementById('gridToggleBtn').style.color = this.gridVisible ? '#7eb8f7' : '#4a5568';
           this.render();
         });
+
+
         document.getElementById('groupBtn').addEventListener('click', () => this.groupSelected());
         document.getElementById('ungroupBtn').addEventListener('click', () => this.ungroupSelected());
         document.getElementById('addLayerBtn').addEventListener('click', () => this.addLayer());
+
+
         this._bindLayerPanelDrag();
+
+
         document.getElementById('saveBtn').addEventListener('click', () => this.doSave());
         document.getElementById('openBtn').addEventListener('click', () => this.doOpen());
         document.getElementById('exportSVG').addEventListener('click', () => this.doExportSVG());
         document.getElementById('exportPNG').addEventListener('click', () => this.doExportPNG());
         document.getElementById('exportPDF').addEventListener('click', () => this.doExportPDF());
+
+
         document.getElementById('fileInput').addEventListener('change', e => this._onFileInput(e));
+
+
         document.getElementById('tbExpandBtn').addEventListener('click', () => {
           this.tbExpanded = !this.tbExpanded;
           if (this.tbExpanded) {
@@ -1121,17 +1373,19 @@
 
         window.addEventListener('resize', () => this.resize());
 
+        // ── Context menu items ──────────────────────────────────────────
         const ctxMenu = document.getElementById('ctx-menu');
         ctxMenu.addEventListener('click', e => {
           const item = e.target.closest('[data-action]');
           if (!item) return;
           this.hideContextMenu();
           switch (item.dataset.action) {
-            case 'copy':   this.copySelected();        break;
-            case 'cut':    this.cutSelected();         break;
-            case 'flipH':  this.flipSelected('h');     break;
-            case 'flipV':  this.flipSelected('v');     break;
-            case 'delete': this.deleteSelected();      break;
+            case 'copy':          this.copySelected();           break;
+            case 'cut':           this.cutSelected();            break;
+            case 'flipH':         this.flipSelected('h');        break;
+            case 'flipV':         this.flipSelected('v');        break;
+            case 'delete':        this.deleteSelected();         break;
+            case 'arrayCircular': this.openArrayCircular();      break;
           }
         });
 
@@ -1159,6 +1413,24 @@
         document.addEventListener('keydown', e => {
           if (e.key === 'Escape') this.hideContextMenu();
         }, true);
+
+        // ── Array Circular panel ────────────────────────────────────────
+        document.getElementById('ap-cancel').addEventListener('click', () => this.cancelArrayCircular());
+        document.getElementById('ap-apply').addEventListener('click', () => this.applyArrayCircular());
+        document.getElementById('ap-pick-btn').addEventListener('click', () => this.toggleArrayPickCenter());
+
+        // Live hint update
+        const apN     = document.getElementById('ap-n');
+        const apAngle = document.getElementById('ap-angle');
+        const updateApHint = () => {
+          const n = Math.max(2, parseInt(apN.value, 10) || 2);
+          const a = parseFloat(apAngle.value) || 360;
+          const step = (a / n).toFixed(1);
+          document.getElementById('ap-hint').textContent =
+            `${n} copias (incluye original) · paso ${step}° · total ${a}°`;
+        };
+        apN.addEventListener('input', updateApHint);
+        apAngle.addEventListener('input', updateApHint);
       }
 
       _bindLayerPanelDrag() {
@@ -1205,6 +1477,9 @@
         });
       }
 
+
+
+
       screenToWorld(sx, sy) {
         return { x: (sx - this.viewX) / this.scale, y: (sy - this.viewY) / this.scale };
       }
@@ -1243,6 +1518,9 @@
         this.zoomDisplay.textContent = Math.round(this.scale * 100) + '%';
       }
 
+
+
+
       snapW(wx, wy) {
         if (!this.snapOn) return { x: wx, y: wy };
         return {
@@ -1263,18 +1541,27 @@
         const r = this.canvas.getBoundingClientRect();
         return { x: e.clientX - r.left, y: e.clientY - r.top };
       }
-      
+
+
+
+
       updateCursor() {
         const panning = this.currentTool === 'pan' || this.spaceDown;
         if (panning) this.canvas.style.cursor = this.isPanning ? 'grabbing' : 'grab';
         else this.canvas.style.cursor = 'crosshair';
       }
 
+
+
+
       updateHint() {
         const list = this.HINTS[this.currentTool] || [''];
         const step = Math.min(this.clicks.length, list.length - 1);
         this.hint.textContent = list[step];
       }
+
+
+
 
       applyStyle(preview) {
         const { ctx, scale } = this;
@@ -1340,9 +1627,88 @@
           case 'ruler':
             this.drawRuler(s, preview); break;
 
+          case 'angledim':
+            this.drawAngleDim(s, preview); break;
+
           case 'ground':
             this.drawGround(s, preview); break;
         }
+        ctx.restore();
+      }
+
+      drawAngleDim(s, preview) {
+        const { ctx, scale } = this;
+        const { vx, vy, p1x, p1y, p2x, p2y } = s;
+        const len1 = Math.hypot(p1x - vx, p1y - vy);
+        const len2 = Math.hypot(p2x - vx, p2y - vy);
+        if (len1 < 1 || len2 < 1) return;
+
+        // Angles of the two arms
+        const a1 = Math.atan2(p1y - vy, p1x - vx);
+        const a2 = Math.atan2(p2y - vy, p2x - vx);
+
+        // Arc drawn from a1 → a2 counterclockwise=false (screen-clockwise).
+        // Normalise so we always draw the ≤180° arc.
+        let diff = ((a2 - a1) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+        let ccw = false;
+        if (diff > Math.PI) { diff = 2 * Math.PI - diff; ccw = true; }
+        const angleDeg = diff * 180 / Math.PI;
+
+        const arcR = Math.max(12 / scale, Math.min(len1, len2) * 0.38);
+        const midA  = ccw ? a1 - diff / 2 : a1 + diff / 2;
+
+        const col = preview ? '#4a9eff' : '#f0c040';
+        const lw  = 1.5 / scale;
+        const tickH = 7 / scale;
+
+        ctx.save();
+        ctx.strokeStyle = col;
+        ctx.fillStyle   = col;
+        ctx.lineWidth   = lw;
+        ctx.setLineDash([]);
+        ctx.lineCap = 'round';
+
+        // Arms
+        ctx.beginPath();
+        ctx.moveTo(vx, vy); ctx.lineTo(p1x, p1y);
+        ctx.moveTo(vx, vy); ctx.lineTo(p2x, p2y);
+        ctx.stroke();
+
+        // Tick at arm tips (perpendicular)
+        [[p1x, p1y, a1], [p2x, p2y, a2]].forEach(([px, py, a]) => {
+          const nx = -Math.sin(a), ny = Math.cos(a);
+          ctx.beginPath();
+          ctx.moveTo(px + nx * tickH, py + ny * tickH);
+          ctx.lineTo(px - nx * tickH, py - ny * tickH);
+          ctx.stroke();
+        });
+
+        // Arc
+        ctx.beginPath();
+        ctx.arc(vx, vy, arcR, a1, a2, ccw);
+        ctx.stroke();
+
+        // Label
+        const label = angleDeg.toFixed(1) + '°';
+        const fontSize = Math.max(10, 13) / scale;
+        ctx.font = `bold ${fontSize}px 'Segoe UI', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const lx = vx + Math.cos(midA) * (arcR + fontSize * 1.1);
+        const ly = vy + Math.sin(midA) * (arcR + fontSize * 1.1);
+
+        const tw  = ctx.measureText(label).width;
+        const th  = fontSize * 1.3;
+        const pad = 4 / scale;
+        ctx.fillStyle = 'rgba(20,24,34,0.82)';
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(lx - tw / 2 - pad, ly - th / 2, tw + pad * 2, th, 3 / scale);
+        else ctx.rect(lx - tw / 2 - pad, ly - th / 2, tw + pad * 2, th);
+        ctx.fill();
+
+        ctx.fillStyle = preview ? '#ffe066' : '#f0c040';
+        ctx.fillText(label, lx, ly);
         ctx.restore();
       }
 
@@ -1452,6 +1818,9 @@
         ctx.restore();
       }
 
+
+
+
       distToSegment(px, py, x1, y1, x2, y2) {
         const dx = x2 - x1, dy = y2 - y1;
         const len2 = dx * dx + dy * dy;
@@ -1466,11 +1835,15 @@
           case 'ruler':
             return this.distToSegment(wx, wy, s.x1, s.y1, s.x2, s.y2) < thr;
           case 'rect': {
-            const inX = wx >= s.x && wx <= s.x + s.w;
-            const inY = wy >= s.y && wy <= s.y + s.h;
-            return (inX && (Math.abs(wy - s.y) < thr || Math.abs(wy - (s.y + s.h)) < thr)) ||
-              (inY && (Math.abs(wx - s.x) < thr || Math.abs(wx - (s.x + s.w)) < thr)) ||
-              (inX && inY);
+            // Only match near the border strokes — NOT the filled interior.
+            // This prevents a large rect from stealing clicks from shapes on top of it.
+            const inX = wx >= s.x - thr && wx <= s.x + s.w + thr;
+            const inY = wy >= s.y - thr && wy <= s.y + s.h + thr;
+            if (!inX || !inY) return false;
+            return Math.abs(wy - s.y)       < thr ||
+                   Math.abs(wy - (s.y + s.h)) < thr ||
+                   Math.abs(wx - s.x)       < thr ||
+                   Math.abs(wx - (s.x + s.w)) < thr;
           }
           case 'circle':
             return Math.abs(Math.hypot(wx - s.cx, wy - s.cy) - s.r) < thr;
@@ -1482,6 +1855,9 @@
             return Math.abs(Math.hypot(wx - s.cx, wy - s.cy) - s.r) < thr;
           case 'ground':
             return this.distToSegment(wx, wy, s.x1, s.y1, s.x2, s.y2) < thr;
+          case 'angledim':
+            return this.distToSegment(wx, wy, s.vx, s.vy, s.p1x, s.p1y) < thr ||
+                   this.distToSegment(wx, wy, s.vx, s.vy, s.p2x, s.p2y) < thr;
           case 'poly': {
             const pts = s.pts;
             for (let i = 0; i < pts.length; i++) {
@@ -1498,10 +1874,22 @@
 
       findShapeAt(wx, wy) {
         const thr = 8 / this.scale;
+        // Pass 1 – selected shapes get priority so dragging a selected shape
+        //           never accidentally targets an overlapping unselected one.
+        for (const i of this.selectedSet) {
+          const s = this.shapes[i];
+          if (!s) continue;
+          const layer = this.layers.find(l => l.id === (s.layerId || 1));
+          if (layer && layer.visible && this.hitTest(s, wx, wy, thr)) return i;
+        }
+        // Pass 2 – remaining shapes, top-to-bottom, active layer only.
         for (let i = this.shapes.length - 1; i >= 0; i--) {
-          const layer = this.layers.find(l => l.id === (this.shapes[i].layerId || 1));
-          if (layer && !layer.visible) continue;
-          if (this.hitTest(this.shapes[i], wx, wy, thr)) return i;
+          if (this.selectedSet.has(i)) continue;          // already checked
+          const s = this.shapes[i];
+          if ((s.layerId || 1) !== this.activeLayerId) continue; // layer isolation
+          const layer = this.layers.find(l => l.id === this.activeLayerId);
+          if (!layer || !layer.visible) continue;
+          if (this.hitTest(s, wx, wy, thr)) return i;
         }
         return -1;
       }
@@ -1529,6 +1917,11 @@
               x: Math.min(s.x1, s.x2), y: Math.min(s.y1, s.y2),
               w: Math.abs(s.x2 - s.x1), h: Math.abs(s.y2 - s.y1)
             };
+          case 'angledim': {
+            const xs = [s.vx, s.p1x, s.p2x], ys = [s.vy, s.p1y, s.p2y];
+            const ax = Math.min(...xs), ay = Math.min(...ys);
+            return { x: ax, y: ay, w: Math.max(...xs) - ax, h: Math.max(...ys) - ay };
+          }
           case 'poly': {
             const xs = s.pts.map(p => p.x), ys = s.pts.map(p => p.y);
             const px = Math.min(...xs), py = Math.min(...ys);
@@ -1585,6 +1978,9 @@
         ctx.restore();
       }
 
+
+
+
       arcFrom3Pts(p1, p2, p3) {
         const ax = p1.x, ay = p1.y, bx = p2.x, by = p2.y, cx = p3.x, cy = p3.y;
         const D = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
@@ -1604,6 +2000,9 @@
 
         return { type: 'arc', cx: ux, cy: uy, r, sa, ea, ccw };
       }
+
+
+
 
       previewShape() {
         if (!this.mousePos || this.currentTool === 'pan') return null;
@@ -1639,6 +2038,16 @@
             if (this.clicks.length === 1) return { type: 'line', x1: this.clicks[0].x, y1: this.clicks[0].y, x2: m.x, y2: m.y };
             return this.arcFrom3Pts(this.clicks[0], this.clicks[1], m);
 
+          case 'angledim':
+            if (this.clicks.length === 0) return null;
+            if (this.clicks.length === 1) return { type: 'line', x1: this.clicks[0].x, y1: this.clicks[0].y, x2: m.x, y2: m.y };
+            return { type: 'angledim', vx: this.clicks[0].x, vy: this.clicks[0].y,
+                     p1x: this.clicks[1].x, p1y: this.clicks[1].y, p2x: m.x, p2y: m.y };
+
+          case 'polygon':
+            if (this.clicks.length === 0) return null;
+            return { type: 'poly', pts: [...this.clicks, m], closed: false };
+
           case 'ruler':
             if (!this.dragging) return null;
             return { type: 'ruler', x1: this.dragStart.x, y1: this.dragStart.y, x2: m.x, y2: m.y };
@@ -1649,6 +2058,9 @@
         }
         return null;
       }
+
+
+
 
       drawGrid() {
         if (!this.gridVisible) return;
@@ -1732,6 +2144,9 @@
         });
       }
 
+
+
+
       render() {
         const { ctx, canvas, scale, viewX, viewY } = this;
         const W = canvas.width, H = canvas.height;
@@ -1762,8 +2177,27 @@
         const pv = this.previewShape();
         if (pv) this.drawShape(pv, true);
 
+        // Polygon: draw dashed closing edge from last click to first
+        if (this.currentTool === 'polygon' && this.clicks.length >= 2 && this.mousePos) {
+          const first = this.clicks[0];
+          const last  = this.mousePos;
+          ctx.save();
+          ctx.strokeStyle = 'rgba(74,158,255,0.35)';
+          ctx.lineWidth = 1 / scale;
+          ctx.setLineDash([5 / scale, 4 / scale]);
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(last.x, last.y);
+          ctx.lineTo(first.x, first.y);
+          ctx.stroke();
+          ctx.restore();
+        }
+
         ctx.restore();
       }
+
+
+
 
       commit() {
         this.history = this.history.slice(0, this.histIdx + 1);
@@ -1794,8 +2228,25 @@
           this.renderLayersPanel(); this.render();
         }
       }
+
+
+
+
       _onMouseMove(e) {
         const sc = this.evtScreen(e);
+
+        // If no active drag/pan operation, only handle events that originate
+        // inside the canvas so we don't update crosshair/preview while the
+        // pointer is over the toolbar or other UI elements.
+        const isDragging = this.isPanning || this.rotatingSelected ||
+                           this.movingSelected || this.rubberBand ||
+                           (this.clicks.length > 0 && this.currentTool !== 'select');
+        if (!isDragging) {
+          const cr = this.canvas.getBoundingClientRect();
+          if (e.clientX < cr.left || e.clientX > cr.right ||
+              e.clientY < cr.top  || e.clientY > cr.bottom) return;
+        }
+
         this.mousePos = this.evtWorld(e);
         this.mouseRaw = sc;
 
@@ -1873,10 +2324,27 @@
         }
 
         if (e.button !== 0) return;
+        // Ctrl+LMB on macOS triggers contextmenu (button=0, ctrlKey=true).
+        // Skip all mousedown logic so contextmenu handler can manage selection.
         if (e.ctrlKey && e.button === 0) return;
 
         const sc = this.evtScreen(e);
         const pos = this.evtWorld(e);
+
+        // ── Array Circular: pick center on canvas ───────────────────────
+        if (this.arrayPickingCenter) {
+          const raw = this.screenToWorld(sc.x, sc.y);
+          const snapped = this.snapW(raw.x, raw.y);
+          document.getElementById('ap-cx').value = Math.round(snapped.x * 100) / 100;
+          document.getElementById('ap-cy').value = Math.round(snapped.y * 100) / 100;
+          this.arrayPickingCenter = false;
+          const btn = document.getElementById('ap-pick-btn');
+          btn.classList.remove('picking');
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/></svg> Elegir en canvas`;
+          this.canvas.style.cursor = 'crosshair';
+          document.getElementById('ap-hint').textContent = `Centro fijado en (${document.getElementById('ap-cx').value}, ${document.getElementById('ap-cy').value})`;
+          return;
+        }
 
         if (this.currentTool === 'pan' || this.spaceDown) {
           this.isPanning = true; this.panLast = sc;
@@ -1885,6 +2353,7 @@
         }
 
         if (this.currentTool === 'select') {
+          // ── Check rotation handle first ──────────────────────────────────
           if (this.selectedSet.size > 0) {
             const selBB = this.getSelectionBBox();
             if (selBB) {
@@ -1909,15 +2378,18 @@
               if (this.selectedSet.has(hit)) this.selectedSet.delete(hit);
               else this.selectedSet.add(hit);
             } else if (!this.selectedSet.has(hit)) {
+              // clicking an unselected shape → clear and select it
               this.selectedSet.clear();
               this.selectedSet.add(hit);
             }
+            // clicking an already-selected shape without shift → keep full selection (group drag)
             if (this.selectedSet.size > 0) {
               this.hint.textContent = this.selectedSet.size > 1
                 ? `${this.selectedSet.size} figuras · Supr=eliminar · Ctrl+C=copiar · Ctrl+D=duplicar · Esc=deseleccionar`
                 : 'Figura seleccionada · Supr=eliminar · Ctrl+C=copiar · Ctrl+D=duplicar · Esc=deseleccionar';
+              // arm drag-move
               this.movingSelected = true;
-              this.moveStart = this.screenToWorld(sc.x, sc.y);   
+              this.moveStart = this.screenToWorld(sc.x, sc.y);   // raw, unsnapped
               this.moveSnap  = JSON.parse(JSON.stringify(this.shapes));
               this.didMove   = false;
             }
@@ -1930,7 +2402,27 @@
           return;
         }
 
-        if (this.currentTool === 'triangle' || this.currentTool === 'arc') {
+        // ── Polygon: multi-click with double-click to close ─────────────
+        if (this.currentTool === 'polygon') {
+          const now = Date.now();
+          const isDouble = (now - this.polyLastClickTime) < 300;
+          this.polyLastClickTime = now;
+
+          if (isDouble && this.clicks.length >= 2) {
+            // Double-click → close polygon (≥3 pts) or commit open polyline (2 pts)
+            this._commitPolygon(this.clicks.length >= 3);
+          } else {
+            this.clicks.push(pos);
+            const n = this.clicks.length;
+            this.hint.textContent = n === 1
+              ? '1 vértice · Clic para continuar · Enter=cerrar · Esc=cancelar'
+              : `${n} vértices · Doble clic=cerrar · Enter=cerrar · Esc=cancelar`;
+          }
+          this.render();
+          return;
+        }
+
+        if (this.currentTool === 'triangle' || this.currentTool === 'arc' || this.currentTool === 'angledim') {
           this.clicks.push(pos);
 
           if (this.currentTool === 'triangle' && this.clicks.length === 3) {
@@ -1942,6 +2434,14 @@
           } else if (this.currentTool === 'arc' && this.clicks.length === 3) {
             const arc = this.arcFrom3Pts(this.clicks[0], this.clicks[1], this.clicks[2]);
             if (arc) { arc.layerId = this.activeLayerId; this.shapes.push(arc); this.commit(); }
+            this.clicks = [];
+          } else if (this.currentTool === 'angledim' && this.clicks.length === 3) {
+            const [v, q1, q2] = this.clicks;
+            if (Math.hypot(q1.x - v.x, q1.y - v.y) > 1 && Math.hypot(q2.x - v.x, q2.y - v.y) > 1) {
+              this.shapes.push({ type: 'angledim', vx: v.x, vy: v.y,
+                p1x: q1.x, p1y: q1.y, p2x: q2.x, p2y: q2.y, layerId: this.activeLayerId });
+              this.commit();
+            }
             this.clicks = [];
           }
 
@@ -1972,8 +2472,9 @@
           const ry1 = Math.min(this.rubberBand.y1, this.rubberBand.y2);
           const ry2 = Math.max(this.rubberBand.y1, this.rubberBand.y2);
           this.shapes.forEach((s, i) => {
-            const layer = this.layers.find(l => l.id === (s.layerId || 1));
-            if (layer && !layer.visible) return;
+            if ((s.layerId || 1) !== this.activeLayerId) return; // layer isolation
+            const layer = this.layers.find(l => l.id === this.activeLayerId);
+            if (!layer || !layer.visible) return;
             const bb = this.shapeBBox(s);
             if (bb.x < rx2 && bb.x + bb.w > rx1 && bb.y < ry2 && bb.y + bb.h > ry1)
               this.selectedSet.add(i);
@@ -2014,6 +2515,7 @@
               ? `${this.selectedSet.size} figuras movidas · Supr=eliminar · Ctrl+C=copiar · Esc=deseleccionar`
               : 'Figura movida · Supr=eliminar · Ctrl+C=copiar · Esc=deseleccionar';
           } else {
+            // pure click, no drag — restore shapes (unchanged) and keep selection
             this.shapes = JSON.parse(JSON.stringify(this.moveSnap));
           }
           this.moveStart = null;
@@ -2088,6 +2590,8 @@
         switch (s.type) {
           case 'line': case 'ruler': case 'ground':
             o.x1 += dx; o.y1 += dy; o.x2 += dx; o.y2 += dy; break;
+          case 'angledim':
+            o.vx += dx; o.vy += dy; o.p1x += dx; o.p1y += dy; o.p2x += dx; o.p2y += dy; break;
           case 'rect':
             o.x += dx; o.y += dy; break;
           case 'circle':
@@ -2107,6 +2611,7 @@
         return o;
       }
 
+      // ── Rotation helpers ───────────────────────────────────────────────────
       rotPt(x, y, angle, cx, cy) {
         const cos = Math.cos(angle), sin = Math.sin(angle);
         const dx = x - cx, dy = y - cy;
@@ -2121,6 +2626,11 @@
           case 'line': case 'ruler': case 'ground': {
             const p1 = rp(s.x1, s.y1), p2 = rp(s.x2, s.y2);
             ns.x1 = p1.x; ns.y1 = p1.y; ns.x2 = p2.x; ns.y2 = p2.y;
+            break;
+          }
+          case 'angledim': {
+            const v = rp(s.vx, s.vy), q1 = rp(s.p1x, s.p1y), q2 = rp(s.p2x, s.p2y);
+            ns.vx = v.x; ns.vy = v.y; ns.p1x = q1.x; ns.p1y = q1.y; ns.p2x = q2.x; ns.p2y = q2.y;
             break;
           }
           case 'circle': {
@@ -2142,6 +2652,7 @@
             break;
           }
           case 'rect': {
+            // Rect becomes a poly (closed polygon) after rotation
             const { x, y, w, h } = s;
             const pts = [rp(x, y), rp(x + w, y), rp(x + w, y + h), rp(x, y + h)];
             return { type: 'poly', pts, closed: true, layerId: s.layerId };
@@ -2157,6 +2668,89 @@
         }
         return ns;
       }
+
+      // ── Array Circular ──────────────────────────────────────────────────
+
+      openArrayCircular() {
+        if (!this.selectedSet.size) return;
+        // Default center = centroid of selection bbox
+        const bb = this.getSelectionBBox();
+        if (bb) {
+          document.getElementById('ap-cx').value = Math.round((bb.x + bb.w / 2) * 100) / 100;
+          document.getElementById('ap-cy').value = Math.round((bb.y + bb.h / 2) * 100) / 100;
+        }
+        // Refresh hint
+        const n = parseInt(document.getElementById('ap-n').value, 10) || 6;
+        const a = parseFloat(document.getElementById('ap-angle').value) || 360;
+        const step = (a / n).toFixed(1);
+        document.getElementById('ap-hint').textContent =
+          `${n} copias (incluye original) · paso ${step}° · total ${a}°`;
+        document.getElementById('array-panel').classList.add('show');
+      }
+
+      cancelArrayCircular() {
+        this.arrayPickingCenter = false;
+        const btn = document.getElementById('ap-pick-btn');
+        btn.classList.remove('picking');
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/></svg> Elegir en canvas`;
+        this.canvas.style.cursor = 'crosshair';
+        document.getElementById('array-panel').classList.remove('show');
+      }
+
+      toggleArrayPickCenter() {
+        this.arrayPickingCenter = !this.arrayPickingCenter;
+        const btn = document.getElementById('ap-pick-btn');
+        if (this.arrayPickingCenter) {
+          btn.classList.add('picking');
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Click en el canvas...`;
+          this.canvas.style.cursor = 'crosshair';
+          document.getElementById('ap-hint').textContent = 'Haz click en el canvas para definir el centro.';
+        } else {
+          btn.classList.remove('picking');
+          btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/></svg> Elegir en canvas`;
+        }
+      }
+
+      applyArrayCircular() {
+        if (!this.selectedSet.size) { this.cancelArrayCircular(); return; }
+        const cx    = parseFloat(document.getElementById('ap-cx').value) || 0;
+        const cy    = parseFloat(document.getElementById('ap-cy').value) || 0;
+        const n     = Math.max(2, Math.min(360, parseInt(document.getElementById('ap-n').value, 10) || 6));
+        const total = parseFloat(document.getElementById('ap-angle').value) || 360;
+
+        this.commit();
+
+        // Snapshot the originals (filter out stale/null indices)
+        const origIndices = [...this.selectedSet].filter(i => i < this.shapes.length && this.shapes[i] != null);
+        if (!origIndices.length) { this.cancelArrayCircular(); return; }
+        const origShapes  = origIndices.map(i => JSON.parse(JSON.stringify(this.shapes[i])));
+
+        const stepRad = (total / n) * (Math.PI / 180);
+        const newShapes = [];
+
+        // Copies 1 … n-1 (the original at k=0 already exists)
+        for (let k = 1; k < n; k++) {
+          const angle = stepRad * k;
+          for (const orig of origShapes) {
+            const copy = this.rotateShapeCoords(orig, angle, cx, cy);
+            copy.layerId = this.activeLayerId;
+            newShapes.push(copy);
+          }
+        }
+
+        // Append all copies and select everything (originals + copies)
+        const startIdx = this.shapes.length;
+        this.shapes.push(...newShapes);
+
+        this.selectedSet.clear();
+        origIndices.forEach(i => this.selectedSet.add(i));
+        for (let i = startIdx; i < this.shapes.length; i++) this.selectedSet.add(i);
+
+        this.cancelArrayCircular();
+        this.render();
+      }
+
+      // ── End Array Circular ──────────────────────────────────────────────
 
       getSelectionBBox() {
         if (!this.selectedSet.size) return null;
@@ -2194,14 +2788,17 @@
         ctx.strokeStyle = '#ff9f43';
         ctx.lineWidth = 1.2 / scale;
         ctx.beginPath(); ctx.moveTo(cx, top); ctx.lineTo(hx, hy); ctx.stroke();
+        // circle
         ctx.fillStyle = this.rotatingSelected ? '#ffe0a0' : '#ff9f43';
         ctx.beginPath(); ctx.arc(hx, hy, r, 0, Math.PI * 2); ctx.fill();
+        // rotation arrow inside circle
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 1 / scale;
         const ar = r * 0.52;
         ctx.beginPath();
         ctx.arc(hx, hy, ar, -Math.PI * 0.75, Math.PI * 0.55);
         ctx.stroke();
+        // arrowhead
         const tipA = Math.PI * 0.55;
         const tx = hx + ar * Math.cos(tipA), ty = hy + ar * Math.sin(tipA);
         const na = tipA + Math.PI / 2;
@@ -2376,7 +2973,11 @@
         if (!this.selectedSet.size) return;
         const dx = this.GRID * 2, dy = this.GRID * 2;
         const sorted = [...this.selectedSet].sort((a, b) => a - b);
-        const newShapes = sorted.map(i => this.offsetShape(this.shapes[i], dx, dy));
+        const newShapes = sorted.map(i => {
+          const ns = this.offsetShape(this.shapes[i], dx, dy);
+          ns.layerId = this.activeLayerId; // always duplicate into the active layer
+          return ns;
+        });
         const startIdx = this.shapes.length;
         this.shapes.push(...newShapes);
         this.commit();
@@ -2406,7 +3007,13 @@
       pasteClipboard() {
         if (!this.clipboard.length) return;
         const dx = this.GRID * 2, dy = this.GRID * 2;
-        const newShapes = this.clipboard.map(s => this.offsetShape(s, dx, dy));
+        // Always paste into the active layer — clipboard may reference a deleted layer
+        const newShapes = this.clipboard.map(s => {
+          const ns = this.offsetShape(s, dx, dy);
+          ns.layerId = this.activeLayerId;
+          return ns;
+        });
+        // Advance clipboard offset so repeated Ctrl+V tiles rather than stacks
         this.clipboard = newShapes.map(s => JSON.parse(JSON.stringify(s)));
         const startIdx = this.shapes.length;
         this.shapes.push(...newShapes);
@@ -2446,14 +3053,17 @@
         this.render();
       }
 
+      // ── Flip helpers ───────────────────────────────────────────────────────
       _flipShapeH(s, cx) {
         const fx = x => 2 * cx - x;
         const ns = JSON.parse(JSON.stringify(s));
         switch (s.type) {
           case 'line': case 'ruler': case 'ground':
             ns.x1 = fx(s.x1); ns.x2 = fx(s.x2); break;
+          case 'angledim':
+            ns.vx = fx(s.vx); ns.p1x = fx(s.p1x); ns.p2x = fx(s.p2x); break;
           case 'rect':
-            ns.x = fx(s.x + s.w); break;           
+            ns.x = fx(s.x + s.w); break;           // keep w, mirror left edge
           case 'circle':
             ns.cx = fx(s.cx); break;
           case 'triangle':
@@ -2479,8 +3089,10 @@
         switch (s.type) {
           case 'line': case 'ruler': case 'ground':
             ns.y1 = fy(s.y1); ns.y2 = fy(s.y2); break;
+          case 'angledim':
+            ns.vy = fy(s.vy); ns.p1y = fy(s.p1y); ns.p2y = fy(s.p2y); break;
           case 'rect':
-            ns.y = fy(s.y + s.h); break;           
+            ns.y = fy(s.y + s.h); break;           // keep h, mirror top edge
           case 'circle':
             ns.cy = fy(s.cy); break;
           case 'triangle':
@@ -2516,9 +3128,11 @@
         this.render();
       }
 
+      // ── Context menu ──────────────────────────────────────────────────────
       showContextMenu(x, y) {
         const menu = document.getElementById('ctx-menu');
         menu.classList.add('show');
+        // Keep inside viewport
         const mw = menu.offsetWidth  || 180;
         const mh = menu.offsetHeight || 160;
         const left = x + mw > window.innerWidth  ? x - mw : x;
@@ -2528,6 +3142,7 @@
       }
 
       showCanvasContextMenu(x, y) {
+        // Grey out items that have nothing to act on
         document.getElementById('ctxc-paste').classList.toggle('ctx-disabled', !this.clipboard.length);
         document.getElementById('ctxc-clear').classList.toggle('ctx-disabled', !this.shapes.length);
 
@@ -2546,6 +3161,7 @@
 
       cancelOp() {
         this.clicks = []; this.dragging = false; this.dragStart = null;
+        this.polyLastClickTime = 0;
         this.selectedSet.clear();
         this.rubberBand        = null;
         this.rotatingSelected  = false;
@@ -2554,6 +3170,20 @@
         this.rotateCurrentAngle = 0;
         this.updateHint(); this.render();
       }
+
+      _commitPolygon(close = true) {
+        const pts = [...this.clicks];
+        if (pts.length < 2) { this.clicks = []; this.polyLastClickTime = 0; this.updateHint(); return; }
+        this.shapes.push({ type: 'poly', pts, closed: close && pts.length >= 3, layerId: this.activeLayerId });
+        this.commit();
+        this.clicks = [];
+        this.polyLastClickTime = 0;
+        this.updateHint();
+        this.render();
+      }
+
+
+
 
       _onKeyDown(e) {
         if (e.target.tagName === 'INPUT') return;
@@ -2578,7 +3208,33 @@
         if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'l') { e.preventDefault(); this.addLayer(); return; }
         if ((e.ctrlKey || e.metaKey) && !e.shiftKey && key.toLowerCase() === 'g') { e.preventDefault(); this.groupSelected(); return; }
         if ((e.ctrlKey || e.metaKey) && e.shiftKey && key.toLowerCase() === 'g') { e.preventDefault(); this.ungroupSelected(); return; }
-        if (key === 'Escape') { this.cancelOp(); return; }
+        if (key === 'Escape') {
+          if (document.getElementById('array-panel').classList.contains('show')) {
+            this.cancelArrayCircular(); return;
+          }
+          this.cancelOp(); return;
+        }
+
+        // Polygon: Enter = commit, Backspace = remove last vertex
+        if (this.currentTool === 'polygon' && this.clicks.length > 0) {
+          if (key === 'Enter') {
+            e.preventDefault();
+            this._commitPolygon(this.clicks.length >= 3);
+            return;
+          }
+          if (key === 'Backspace') {
+            e.preventDefault();
+            this.clicks.pop();
+            if (this.clicks.length === 0) {
+              this.hint.textContent = this.HINTS.polygon[0];
+            } else {
+              const n = this.clicks.length;
+              this.hint.textContent = `${n} vértice${n > 1 ? 's' : ''} · Doble clic=cerrar · Enter=cerrar · Esc=cancelar`;
+            }
+            this.render();
+            return;
+          }
+        }
 
         if ((key === 'Delete' || key === 'Backspace') && this.selectedSet.size > 0) {
           e.preventDefault();
@@ -2588,7 +3244,7 @@
 
         const map = {
           l: 'line', r: 'rect', c: 'circle', t: 'triangle', a: 'arc',
-          v: 'pan', u: 'ruler', e: 'ground', s: 'select'
+          v: 'pan', u: 'ruler', e: 'ground', s: 'select', q: 'angledim', p: 'polygon'
         };
         if (map[key.toLowerCase()] && !e.ctrlKey && !e.metaKey) {
           this.setTool(map[key.toLowerCase()]);
@@ -2624,9 +3280,13 @@
         }
       }
 
+
+
+
       setTool(name) {
         this.currentTool = name;
         this.clicks = []; this.dragging = false; this.dragStart = null;
+        this.polyLastClickTime = 0;
         document.querySelectorAll('[data-tool]').forEach(b =>
           b.classList.toggle('active', b.dataset.tool === name)
         );
@@ -2634,6 +3294,9 @@
         this.updateCursor();
         this.render();
       }
+
+
+
 
       checkTbOverflow() {
         if (this.tbExpanded) return;
@@ -2658,6 +3321,9 @@
         btn.textContent = '≫';
       }
 
+
+
+
       resize() {
         this.canvas.width = this.wrap.clientWidth;
         this.canvas.height = this.wrap.clientHeight;
@@ -2681,6 +3347,7 @@
         this.shapes.forEach(s => {
           switch (s.type) {
             case 'line': case 'ruler': case 'ground': ex(s.x1, s.y1); ex(s.x2, s.y2); break;
+            case 'angledim': ex(s.vx, s.vy); ex(s.p1x, s.p1y); ex(s.p2x, s.p2y); break;
             case 'rect': ex(s.x, s.y); ex(s.x + s.w, s.y + s.h); break;
             case 'circle': ex(s.cx - s.r, s.cy - s.r); ex(s.cx + s.r, s.cy + s.r); break;
             case 'triangle': ex(s.p1.x, s.p1.y); ex(s.p2.x, s.p2.y); ex(s.p3.x, s.p3.y); break;
@@ -2800,6 +3467,36 @@
               `<text x="${this.r2(lx)}" y="${this.r2(ly)}" text-anchor="middle" dominant-baseline="middle" font-family="'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="${col}">${label}</text>`,
             ].join('\n');
           }
+          case 'angledim': {
+            const { vx, vy, p1x, p1y, p2x, p2y } = s;
+            const len1 = Math.hypot(p1x - vx, p1y - vy);
+            const len2 = Math.hypot(p2x - vx, p2y - vy);
+            if (len1 < 1 || len2 < 1) return '';
+            const a1 = Math.atan2(p1y - vy, p1x - vx);
+            const a2 = Math.atan2(p2y - vy, p2x - vx);
+            let diff = ((a2 - a1) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+            let sweepFlag = 1; // SVG: 1=clockwise
+            if (diff > Math.PI) { diff = 2 * Math.PI - diff; sweepFlag = 0; }
+            const angleDeg = diff * 180 / Math.PI;
+            const arcR = Math.min(len1, len2) * 0.38;
+            const midA = sweepFlag === 1 ? a1 + diff / 2 : a1 - diff / 2;
+            const col = '#b08800';
+            const ab = `fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round"`;
+            const ax1 = this.r2(vx + Math.cos(a1) * arcR), ay1 = this.r2(vy + Math.sin(a1) * arcR);
+            const ax2 = this.r2(vx + Math.cos(a2) * arcR), ay2 = this.r2(vy + Math.sin(a2) * arcR);
+            const tH = 7;
+            const n1 = [-Math.sin(a1), Math.cos(a1)], n2 = [-Math.sin(a2), Math.cos(a2)];
+            const lx = this.r2(vx + Math.cos(midA) * (arcR + 14));
+            const ly = this.r2(vy + Math.sin(midA) * (arcR + 14));
+            return [
+              `<line x1="${this.r2(vx)}" y1="${this.r2(vy)}" x2="${this.r2(p1x)}" y2="${this.r2(p1y)}" ${ab}/>`,
+              `<line x1="${this.r2(vx)}" y1="${this.r2(vy)}" x2="${this.r2(p2x)}" y2="${this.r2(p2y)}" ${ab}/>`,
+              `<line x1="${this.r2(p1x+n1[0]*tH)}" y1="${this.r2(p1y+n1[1]*tH)}" x2="${this.r2(p1x-n1[0]*tH)}" y2="${this.r2(p1y-n1[1]*tH)}" ${ab}/>`,
+              `<line x1="${this.r2(p2x+n2[0]*tH)}" y1="${this.r2(p2y+n2[1]*tH)}" x2="${this.r2(p2x-n2[0]*tH)}" y2="${this.r2(p2y-n2[1]*tH)}" ${ab}/>`,
+              `<path d="M${ax1},${ay1} A${this.r2(arcR)},${this.r2(arcR)} 0 0 ${sweepFlag} ${ax2},${ay2}" ${ab}/>`,
+              `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-family="'Segoe UI',sans-serif" font-size="11" font-weight="bold" fill="${col}">${angleDeg.toFixed(1)}°</text>`,
+            ].join('\n');
+          }
         }
         return '';
       }
@@ -2896,24 +3593,28 @@
 
         const bbox = this.getShapesBBox();
         const m    = this.EXPORT_MARGIN;
-        const ox   = bbox.minX - m;  
+        const ox   = bbox.minX - m;   // world origin for PDF
         const oy   = bbox.minY - m;
         const vw   = Math.max(1, bbox.maxX - bbox.minX + m * 2);
         const vh   = Math.max(1, bbox.maxY - bbox.minY + m * 2);
 
+        // Scale: target 200 DPI, capped at A1 (2384 pt ≈ 84 cm)
         const A1_PT = 2384;
         const sf    = Math.min(200 / 96, A1_PT / Math.max(vw, vh));
         const pw    = vw * sf;
         const ph    = vh * sf;
 
+        // World → PDF coordinate helpers
         const tx = wx => (wx - ox) * sf;
         const ty = wy => (wy - oy) * sf;
 
         const pdf = new jsPDF({ orientation: pw >= ph ? 'l' : 'p', unit: 'pt', format: [pw, ph] });
 
+        // White background
         pdf.setFillColor(255, 255, 255);
         pdf.rect(0, 0, pw, ph, 'F');
 
+        // Grid lines (only if visible)
         if (this.gridVisible) {
           const { GRID, GRID_MAJOR } = this;
           const x0 = Math.floor(bbox.minX / GRID) * GRID;
@@ -2932,6 +3633,7 @@
             if ((Math.round(gy / GRID) % GRID_MAJOR) === 0) continue;
             pdf.line(tx(bbox.minX - m * 0.5), ty(gy), tx(bbox.maxX + m * 0.5), ty(gy));
           }
+          // major grid
           pdf.setDrawColor(190, 190, 190);
           pdf.setLineWidth(0.35);
           for (let gx = x0; gx <= x1; gx += GRID) {
@@ -2944,6 +3646,7 @@
           }
         }
 
+        // Shapes, layer by layer
         this.layers.forEach(layer => {
           if (!layer.visible) return;
           this.shapes.forEach(s => {
@@ -2955,18 +3658,22 @@
         pdf.save('microcad.pdf');
       }
 
+      // ── Native jsPDF vector drawing ────────────────────────────────────────
       _drawShapePDF(pdf, s, layer, tx, ty, sf) {
         if (s.type === 'group') {
           s.children.forEach(c => this._drawShapePDF(pdf, c, layer, tx, ty, sf));
           return;
         }
+
+        // Layer opacity via GState
         const opacity = layer.opacity ?? 1;
         try {
           pdf.saveGraphicsState();
           const gs = new pdf.GState({ opacity, 'stroke-opacity': opacity });
           pdf.setGState(gs);
-        } catch (_) { console.error('pdf failed'); }
-        
+        } catch (_) { /* GState not available in all builds */ }
+
+        // Stroke colour: dark ink on white paper
         pdf.setDrawColor(20, 30, 55);
         pdf.setLineCap('round');
         pdf.setLineJoin('round');
@@ -3098,9 +3805,54 @@
             }
             break;
           }
+          case 'angledim': {
+            const { vx, vy, p1x, p1y, p2x, p2y } = s;
+            const len1 = Math.hypot(p1x - vx, p1y - vy);
+            const len2 = Math.hypot(p2x - vx, p2y - vy);
+            if (len1 < 1 || len2 < 1) break;
+            const a1 = Math.atan2(p1y - vy, p1x - vx);
+            const a2 = Math.atan2(p2y - vy, p2x - vx);
+            let diff = ((a2 - a1) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+            let ccw = false;
+            if (diff > Math.PI) { diff = 2 * Math.PI - diff; ccw = true; }
+            const angleDeg = diff * 180 / Math.PI;
+            const arcR = Math.min(len1, len2) * 0.38;
+            const midA  = ccw ? a1 - diff / 2 : a1 + diff / 2;
+            const tH = 7;
+
+            pdf.setDrawColor(160, 100, 0);
+            pdf.setLineWidth(0.5);
+            // Arms
+            pdf.line(tx(vx), ty(vy), tx(p1x), ty(p1y));
+            pdf.line(tx(vx), ty(vy), tx(p2x), ty(p2y));
+            // Ticks at arm tips
+            [[p1x, p1y, a1], [p2x, p2y, a2]].forEach(([px, py, a]) => {
+              const nx = -Math.sin(a), ny = Math.cos(a);
+              pdf.line(tx(px + nx * tH), ty(py + ny * tH), tx(px - nx * tH), ty(py - ny * tH));
+            });
+            // Arc as polyline approximation (≤5° steps)
+            const steps = Math.max(4, Math.ceil(Math.abs(diff) / (5 * Math.PI / 180)));
+            const arcPts = [];
+            for (let i = 0; i <= steps; i++) {
+              const frac = i / steps;
+              const a = ccw ? a1 - diff * frac : a1 + diff * frac;
+              arcPts.push([tx(vx + Math.cos(a) * arcR), ty(vy + Math.sin(a) * arcR)]);
+            }
+            pdf.setLineWidth(0.4);
+            for (let i = 0; i < arcPts.length - 1; i++)
+              pdf.line(arcPts[i][0], arcPts[i][1], arcPts[i+1][0], arcPts[i+1][1]);
+            // Label
+            const lx = vx + Math.cos(midA) * (arcR + 14);
+            const ly = vy + Math.sin(midA) * (arcR + 14);
+            pdf.setFontSize(8);
+            pdf.setTextColor(120, 70, 0);
+            try { pdf.text(`${angleDeg.toFixed(1)}°`, tx(lx), ty(ly), { align: 'center' }); }
+            catch (_) { pdf.text(`${angleDeg.toFixed(1)}`, tx(lx), ty(ly)); }
+            break;
+          }
         }
 
-        try { pdf.restoreGraphicsState(); } catch (_) { console.error('pdf failed'); }
+        try { pdf.restoreGraphicsState(); } catch (_) { /* ignore */ }
       }
 
       saveDraft() {
