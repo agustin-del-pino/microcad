@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MicroCAD — Documentación del formato .mcad</title>
+  <meta name="description" content="Documentación técnica del formato de archivo .mcad de MicroCAD: schema JSON, tipos de shapes, sistema de coordenadas y referencia completa para integración con LLMs.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --surface:   #161b27;
+      --border:    #252d40;
+      --accent:    #7eb8f7;
+      --accent2:   #a78bfa;
+      --text:      #c8d8f0;
+      --muted:     #5a6a8a;
+      --code-bg:   #0d1220;
+      --green:     #4ade80;
+      --yellow:    #fbbf24;
+      --orange:    #fb923c;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    /* ── Layout ── */
+    .page { display: flex; min-height: 100vh; }
+
+    nav {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 28px 0 40px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+      letter-spacing: .04em;
+    }
+    nav .logo span { font-weight: 400; color: var(--muted); font-size: 11px; display: block; margin-top: 2px; }
+
+    nav a {
+      display: block;
+      padding: 5px 20px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12.5px;
+      transition: color .12s;
+      border-left: 2px solid transparent;
+    }
+    nav a:hover { color: var(--text); }
+    nav a.active { color: var(--accent); border-left-color: var(--accent); }
+    nav .nav-section {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 16px 20px 4px;
+    }
+
+    main {
+      flex: 1;
+      max-width: 860px;
+      padding: 48px 56px;
+      overflow-x: hidden;
+    }
+
+    /* ── Typography ── */
+    h1 { font-size: 28px; font-weight: 700; color: #e8f0ff; margin-bottom: 8px; }
+    h2 { font-size: 20px; font-weight: 600; color: #d0e0ff; margin: 48px 0 14px; padding-top: 48px; border-top: 1px solid var(--border); }
+    h2:first-of-type { margin-top: 28px; }
+    h3 { font-size: 15px; font-weight: 600; color: var(--accent); margin: 28px 0 10px; }
+    p  { margin-bottom: 12px; color: var(--text); }
+    ul { margin: 8px 0 12px 20px; }
+    li { margin-bottom: 4px; }
+    strong { color: #e0ecff; }
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 12.5px;
+      color: var(--accent2);
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 12px 0 20px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text);
+    }
+
+    .lead {
+      font-size: 15px;
+      color: #9ab0cc;
+      margin-bottom: 24px;
+      max-width: 600px;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .badge-req  { background: #1c2e4a; color: var(--accent); }
+    .badge-opt  { background: #1a2a1a; color: var(--green); }
+    .badge-type { background: #2a1a2a; color: var(--accent2); }
+
+    /* ── Property table ── */
+    .prop-table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 12.5px; }
+    .prop-table th {
+      text-align: left;
+      padding: 7px 12px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .prop-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid #1c2233;
+      vertical-align: top;
+    }
+    .prop-table tr:last-child td { border-bottom: none; }
+    .prop-name { color: var(--accent2); font-family: monospace; }
+    .prop-type { color: var(--yellow); font-size: 11.5px; }
+    .prop-desc { color: var(--muted); }
+
+    /* ── Note / tip ── */
+    .note {
+      background: #111c30;
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      margin: 16px 0;
+      font-size: 13px;
+      color: #9ab8d8;
+    }
+    .note strong { color: var(--accent); }
+
+    /* ── Shape card ── */
+    .shape-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+    }
+    .shape-card h3 { margin-top: 0; }
+
+    a { color: var(--accent); }
+    hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Sidebar -->
+  <nav>
+    <div class="logo">MicroCAD <span>Documentación v4</span></div>
+
+    <div class="nav-section">Introducción</div>
+    <a href="#overview">¿Qué es MicroCAD?</a>
+    <a href="#ai-usage">Uso con LLMs / IA</a>
+
+    <div class="nav-section">Formato .mcad</div>
+    <a href="#root">Estructura raíz</a>
+    <a href="#coordinates">Sistema de coordenadas</a>
+    <a href="#layers">Capas</a>
+    <a href="#config">Configuración del proyecto</a>
+
+    <div class="nav-section">Tipos de shape</div>
+    <a href="#line">line</a>
+    <a href="#rect">rect</a>
+    <a href="#circle">circle</a>
+    <a href="#triangle">triangle</a>
+    <a href="#arc">arc</a>
+    <a href="#poly">poly</a>
+    <a href="#ruler">ruler</a>
+    <a href="#ground">ground</a>
+    <a href="#angledim">angledim</a>
+    <a href="#group">group</a>
+
+    <div class="nav-section">Ejemplos</div>
+    <a href="#example-minimal">Archivo mínimo</a>
+    <a href="#example-full">Ejemplo completo</a>
+  </nav>
+
+  <!-- Content -->
+  <main>
+    <h1>MicroCAD</h1>
+    <p class="lead">Documentación técnica del formato <code>.mcad</code> — referencia completa para integración con LLMs, herramientas externas y automatización.</p>
+
+    <div class="note">
+      <strong>Para LLMs:</strong> Esta página describe el formato completo del archivo <code>.mcad</code>.
+      Con este schema podés generar, modificar o analizar dibujos CAD en MicroCAD.
+      La app está en <a href="https://agustin-del-pino.github.io/microcad/">agustin-del-pino.github.io/microcad</a>.
+    </div>
+
+    <!-- ── Overview ── -->
+    <h2 id="overview">¿Qué es MicroCAD?</h2>
+    <p>MicroCAD es una aplicación CAD 2D ligera que corre completamente en el browser (HTML + Canvas, sin dependencias). Permite dibujar figuras técnicas, organizarlas en capas, exportar a SVG / PNG / PDF y guardar proyectos en formato <code>.mcad</code>.</p>
+    <p>El formato <code>.mcad</code> es JSON plano, legible y fácil de generar programáticamente o con IA.</p>
+
+    <!-- ── AI Usage ── -->
+    <h2 id="ai-usage">Uso con LLMs / IA</h2>
+    <p>El flujo pensado para generar dibujos con IA es:</p>
+    <ul>
+      <li>El usuario describe lo que quiere dibujar en lenguaje natural.</li>
+      <li>El LLM genera el JSON completo del archivo <code>.mcad</code>.</li>
+      <li>El usuario guarda el JSON con extensión <code>.mcad</code> y lo abre con <strong>MicroCAD → Abrir</strong>.</li>
+    </ul>
+    <div class="note">
+      <strong>Consejo:</strong> En MicroCAD, el botón <em>"Copiar proyecto para LLMs"</em> (panel de capas, parte inferior) copia al portapapeles el schema completo más el JSON del proyecto actual, listo para pegar en cualquier chat de IA.
+    </div>
+
+    <!-- ── Root structure ── -->
+    <h2 id="root">Estructura raíz del archivo</h2>
+    <pre><code>{
+  "version": 4,
+  "GRID": 20,
+  "unitScale": 1,
+  "cfg": { ... },
+  "layers": [ ... ],
+  "shapes": [ ... ]
+}</code></pre>
+
+    <table class="prop-table">
+      <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+      <tr>
+        <td class="prop-name">version</td>
+        <td class="prop-type">number</td>
+        <td class="prop-desc"><span class="badge badge-req">requerido</span> Versión del formato. Valor actual: <code>4</code>.</td>
+      </tr>
+      <tr>
+        <td class="prop-name">GRID</td>
+        <td class="prop-type">number</td>
+        <td class="prop-desc"><span class="badge badge-req">requerido</span> Espaciado de la grilla en unidades canvas. Valores típicos: <code>10</code>, <code>20</code>, <code>50</code>.</td>
+      </tr>
+      <tr>
+        <td class="prop-name">unitScale</td>
+        <td class="prop-type">number</td>
+        <td class="prop-desc"><span class="badge badge-req">requerido</span> Cuántas unidades base (<code>baseUnit</code>) equivalen a 1 unidad canvas. Ej: <code>1</code> significa 1u = 1mm.</td>
+      </tr>
+      <tr>
+        <td class="prop-name">cfg</td>
+        <td class="prop-type">object</td>
+        <td class="prop-desc"><span class="badge badge-req">requerido</span> Configuración del proyecto. Ver <a href="#config">sección cfg</a>.</td>
+      </tr>
+      <tr>
+        <td class="prop-name">layers</td>
+        <td class="prop-type">array</td>
+        <td class="prop-desc"><span class="badge badge-req">requerido</span> Array de capas. Debe tener al menos una.</td>
+      </tr>
+      <tr>
+        <td class="prop-name">shapes</td>
+        <td class="prop-type">array</td>
+        <td class="prop-desc"><span class="badge badge-req">requerido</span> Array de shapes. Puede estar vacío.</td>
+      </tr>
+    </table>
+
+    <!-- ── Coordinates ── -->
+    <h2 id="coordinates">Sistema de coordenadas</h2>
+    <ul>
+      <li><strong>Origen (0, 0)</strong> en el centro del canvas.</li>
+      <li><strong>Eje X</strong> crece hacia la derecha.</li>
+      <li><strong>Eje Y</strong> crece hacia abajo (convención screen/canvas).</li>
+      <li>Las unidades son <em>unidades canvas</em>. Su equivalencia física depende de <code>unitScale</code> y <code>baseUnit</code>.</li>
+    </ul>
+    <pre><code>// Con unitScale=1 y baseUnit="mm":
+// 1 unidad canvas = 1 mm
+// GRID=20 → cada celda de grilla = 20 mm
+
+// Ejemplo: rectángulo centrado de 100×50 mm
+{ "type": "rect", "x": -50, "y": -25, "w": 100, "h": 50, "layerId": 1 }</code></pre>
+
+    <div class="note">
+      <strong>Consejo para LLMs:</strong> Por convención, centrá los dibujos en el origen. Usá el <code>GRID</code> como módulo base para las dimensiones (múltiplos de <code>GRID</code> se alinean perfectamente a la grilla).
+    </div>
+
+    <!-- ── Layers ── -->
+    <h2 id="layers">Capas (layers)</h2>
+    <pre><code>{
+  "id": 1,
+  "name": "Capa 1",
+  "opacity": 1,
+  "visible": true
+}</code></pre>
+
+    <table class="prop-table">
+      <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+      <tr><td class="prop-name">id</td><td class="prop-type">number</td><td class="prop-desc">Identificador único. Los shapes referencian capas por este valor.</td></tr>
+      <tr><td class="prop-name">name</td><td class="prop-type">string</td><td class="prop-desc">Nombre visible en el panel de capas.</td></tr>
+      <tr><td class="prop-name">opacity</td><td class="prop-type">number</td><td class="prop-desc">Opacidad de la capa: <code>0</code> (invisible) a <code>1</code> (opaco).</td></tr>
+      <tr><td class="prop-name">visible</td><td class="prop-type">boolean</td><td class="prop-desc">Si es <code>false</code>, la capa no se renderiza ni exporta.</td></tr>
+    </table>
+    <p>Todo shape tiene el campo <code>layerId</code> que debe coincidir con el <code>id</code> de alguna capa existente.</p>
+
+    <!-- ── Config ── -->
+    <h2 id="config">Configuración del proyecto (cfg)</h2>
+    <pre><code>{
+  "projectName": "Mi proyecto",
+  "baseUnit": "mm",
+  "displayUnit": "mm",
+  "bgColor": "#1a1d23",
+  "gridColor": "#2d3344",
+  "exportBgColor": "#ffffff",
+  "exportGridColor": "#d4d4d4"
+}</code></pre>
+
+    <table class="prop-table">
+      <tr><th>Campo</th><th>Tipo</th><th>Default</th><th>Descripción</th></tr>
+      <tr><td class="prop-name">projectName</td><td class="prop-type">string</td><td><code>"Sin nombre"</code></td><td class="prop-desc">Nombre del proyecto.</td></tr>
+      <tr><td class="prop-name">baseUnit</td><td class="prop-type">string</td><td><code>"mm"</code></td><td class="prop-desc">Unidad de medida base: <code>"mm"</code>, <code>"cm"</code>, <code>"m"</code>, <code>"km"</code>.</td></tr>
+      <tr><td class="prop-name">displayUnit</td><td class="prop-type">string</td><td><code>"mm"</code></td><td class="prop-desc">Unidad de visualización en la UI (puede diferir de baseUnit para conversión automática).</td></tr>
+      <tr><td class="prop-name">bgColor</td><td class="prop-type">string</td><td><code>"#1a1d23"</code></td><td class="prop-desc">Color de fondo del canvas (hex).</td></tr>
+      <tr><td class="prop-name">gridColor</td><td class="prop-type">string</td><td><code>"#2d3344"</code></td><td class="prop-desc">Color de la grilla en canvas (hex).</td></tr>
+      <tr><td class="prop-name">exportBgColor</td><td class="prop-type">string</td><td><code>"#ffffff"</code></td><td class="prop-desc">Color de fondo en exportaciones SVG/PNG/PDF (hex).</td></tr>
+      <tr><td class="prop-name">exportGridColor</td><td class="prop-type">string</td><td><code>"#d4d4d4"</code></td><td class="prop-desc">Color de grilla en exportaciones (hex).</td></tr>
+    </table>
+
+    <!-- ── Shape types ── -->
+    <h2>Tipos de shape</h2>
+    <p>Todo shape tiene el campo <code>layerId: number</code> (requerido). Los demás campos dependen del tipo.</p>
+
+    <!-- line -->
+    <div class="shape-card" id="line">
+      <h3>line — Línea recta</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">x1, y1</td><td class="prop-type">number</td><td class="prop-desc">Punto de inicio.</td></tr>
+        <tr><td class="prop-name">x2, y2</td><td class="prop-type">number</td><td class="prop-desc">Punto de fin.</td></tr>
+      </table>
+      <pre><code>{ "type": "line", "x1": -100, "y1": 0, "x2": 100, "y2": 0, "layerId": 1 }</code></pre>
+    </div>
+
+    <!-- rect -->
+    <div class="shape-card" id="rect">
+      <h3>rect — Rectángulo</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">x, y</td><td class="prop-type">number</td><td class="prop-desc">Esquina <strong>superior-izquierda</strong>.</td></tr>
+        <tr><td class="prop-name">w</td><td class="prop-type">number</td><td class="prop-desc">Ancho (positivo).</td></tr>
+        <tr><td class="prop-name">h</td><td class="prop-type">number</td><td class="prop-desc">Alto (positivo).</td></tr>
+      </table>
+      <pre><code>{ "type": "rect", "x": -50, "y": -25, "w": 100, "h": 50, "layerId": 1 }</code></pre>
+    </div>
+
+    <!-- circle -->
+    <div class="shape-card" id="circle">
+      <h3>circle — Círculo</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">cx, cy</td><td class="prop-type">number</td><td class="prop-desc">Centro del círculo.</td></tr>
+        <tr><td class="prop-name">r</td><td class="prop-type">number</td><td class="prop-desc">Radio (positivo).</td></tr>
+      </table>
+      <pre><code>{ "type": "circle", "cx": 0, "cy": 0, "r": 60, "layerId": 1 }</code></pre>
+    </div>
+
+    <!-- triangle -->
+    <div class="shape-card" id="triangle">
+      <h3>triangle — Triángulo</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">p1, p2, p3</td><td class="prop-type">{x,y}</td><td class="prop-desc">Los tres vértices.</td></tr>
+      </table>
+      <pre><code>{
+  "type": "triangle",
+  "p1": {"x": 0,   "y": -60},
+  "p2": {"x": 60,  "y": 40},
+  "p3": {"x": -60, "y": 40},
+  "layerId": 1
+}</code></pre>
+    </div>
+
+    <!-- arc -->
+    <div class="shape-card" id="arc">
+      <h3>arc — Arco de círculo</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">cx, cy</td><td class="prop-type">number</td><td class="prop-desc">Centro del arco.</td></tr>
+        <tr><td class="prop-name">r</td><td class="prop-type">number</td><td class="prop-desc">Radio.</td></tr>
+        <tr><td class="prop-name">sa</td><td class="prop-type">number</td><td class="prop-desc">Ángulo de inicio en <strong>radianes</strong> (0 = derecha).</td></tr>
+        <tr><td class="prop-name">ea</td><td class="prop-type">number</td><td class="prop-desc">Ángulo de fin en radianes.</td></tr>
+        <tr><td class="prop-name">ccw</td><td class="prop-type">boolean</td><td class="prop-desc"><code>false</code> = horario, <code>true</code> = antihorario.</td></tr>
+      </table>
+      <pre><code>// Semicírculo superior
+{
+  "type": "arc",
+  "cx": 0, "cy": 0, "r": 60,
+  "sa": 3.14159, "ea": 0,
+  "ccw": false,
+  "layerId": 1
+}</code></pre>
+      <div class="note"><strong>Ángulos de referencia:</strong> 0 = derecha (3h), π/2 ≈ 1.5708 = abajo (6h), π ≈ 3.1416 = izquierda (9h), 3π/2 ≈ 4.7124 = arriba (12h).</div>
+    </div>
+
+    <!-- poly -->
+    <div class="shape-card" id="poly">
+      <h3>poly — Polilínea / Polígono</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">pts</td><td class="prop-type">{x,y}[]</td><td class="prop-desc">Array de vértices (mínimo 2).</td></tr>
+        <tr><td class="prop-name">closed</td><td class="prop-type">boolean</td><td class="prop-desc"><code>true</code> = polígono cerrado, <code>false</code> = polilínea abierta.</td></tr>
+      </table>
+      <pre><code>// Estrella de 4 puntas (polígono cerrado)
+{
+  "type": "poly",
+  "pts": [
+    {"x": 0, "y": -80}, {"x": 20, "y": -20},
+    {"x": 80, "y": 0},  {"x": 20, "y": 20},
+    {"x": 0, "y": 80},  {"x": -20, "y": 20},
+    {"x": -80, "y": 0}, {"x": -20, "y": -20}
+  ],
+  "closed": true,
+  "layerId": 1
+}</code></pre>
+    </div>
+
+    <!-- ruler -->
+    <div class="shape-card" id="ruler">
+      <h3>ruler — Regla de medición</h3>
+      <p>Igual que <code>line</code> pero renderiza la medida de distancia sobre el segmento. Usa <code>unitScale</code> y <code>displayUnit</code> para formatear el valor.</p>
+      <pre><code>{ "type": "ruler", "x1": -100, "y1": 80, "x2": 100, "y2": 80, "layerId": 1 }
+// → muestra "200.0 mm" (con unitScale=1, displayUnit="mm")</code></pre>
+    </div>
+
+    <!-- ground -->
+    <div class="shape-card" id="ground">
+      <h3>ground — Línea de terreno / apoyo</h3>
+      <p>Línea con sombreado diagonal en la dirección "suelo" (símbolo de apoyo fijo en ingeniería).</p>
+      <pre><code>{ "type": "ground", "x1": -120, "y1": 60, "x2": 120, "y2": 60, "layerId": 1 }</code></pre>
+    </div>
+
+    <!-- angledim -->
+    <div class="shape-card" id="angledim">
+      <h3>angledim — Acotación de ángulo</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">vx, vy</td><td class="prop-type">number</td><td class="prop-desc">Vértice del ángulo.</td></tr>
+        <tr><td class="prop-name">p1x, p1y</td><td class="prop-type">number</td><td class="prop-desc">Extremo del primer brazo.</td></tr>
+        <tr><td class="prop-name">p2x, p2y</td><td class="prop-type">number</td><td class="prop-desc">Extremo del segundo brazo.</td></tr>
+      </table>
+      <pre><code>// Ángulo de 90° con vértice en el origen
+{
+  "type": "angledim",
+  "vx": 0,  "vy": 0,
+  "p1x": 100, "p1y": 0,
+  "p2x": 0,   "p2y": -100,
+  "layerId": 1
+}</code></pre>
+      <p>La app calcula y muestra el ángulo formado automáticamente.</p>
+    </div>
+
+    <!-- group -->
+    <div class="shape-card" id="group">
+      <h3>group — Grupo de shapes</h3>
+      <table class="prop-table">
+        <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+        <tr><td class="prop-name">children</td><td class="prop-type">shape[]</td><td class="prop-desc">Array de shapes anidados (cualquier tipo, incluyendo otros grupos).</td></tr>
+      </table>
+      <pre><code>{
+  "type": "group",
+  "layerId": 1,
+  "children": [
+    { "type": "circle", "cx": 0, "cy": 0, "r": 40, "layerId": 1 },
+    { "type": "line", "x1": -40, "y1": 0, "x2": 40, "y2": 0, "layerId": 1 }
+  ]
+}</code></pre>
+    </div>
+
+    <!-- ── Examples ── -->
+    <h2 id="example-minimal">Archivo mínimo válido</h2>
+    <pre><code>{
+  "version": 4,
+  "GRID": 20,
+  "unitScale": 1,
+  "cfg": {
+    "projectName": "Sin nombre",
+    "baseUnit": "mm",
+    "displayUnit": "mm",
+    "bgColor": "#1a1d23",
+    "gridColor": "#2d3344",
+    "exportBgColor": "#ffffff",
+    "exportGridColor": "#d4d4d4"
+  },
+  "layers": [
+    { "id": 1, "name": "Capa 1", "opacity": 1, "visible": true }
+  ],
+  "shapes": []
+}</code></pre>
+
+    <h2 id="example-full">Ejemplo completo — Perfil de viga I</h2>
+    <pre><code>{
+  "version": 4,
+  "GRID": 20,
+  "unitScale": 1,
+  "cfg": {
+    "projectName": "Perfil viga I",
+    "baseUnit": "mm",
+    "displayUnit": "mm",
+    "bgColor": "#1a1d23",
+    "gridColor": "#2d3344",
+    "exportBgColor": "#ffffff",
+    "exportGridColor": "#d4d4d4"
+  },
+  "layers": [
+    { "id": 1, "name": "Perfil",   "opacity": 1, "visible": true },
+    { "id": 2, "name": "Cotas",    "opacity": 1, "visible": true }
+  ],
+  "shapes": [
+    // Ala superior (80×10 mm)
+    { "type": "rect", "x": -40, "y": -60, "w": 80, "h": 10, "layerId": 1 },
+    // Alma (10×100 mm)
+    { "type": "rect", "x": -5,  "y": -50, "w": 10, "h": 100, "layerId": 1 },
+    // Ala inferior (80×10 mm)
+    { "type": "rect", "x": -40, "y": 50,  "w": 80, "h": 10,  "layerId": 1 },
+    // Cota de ancho total
+    { "type": "ruler", "x1": -40, "y1": 80, "x2": 40, "y2": 80, "layerId": 2 },
+    // Cota de alto total
+    { "type": "ruler", "x1": 60, "y1": -60, "x2": 60, "y2": 60, "layerId": 2 }
+  ]
+}</code></pre>
+
+    <div class="note">
+      <strong>Nota:</strong> Los comentarios (<code>// ...</code>) son solo ilustrativos — el JSON real no admite comentarios. En el archivo final, eliminá los comentarios.
+    </div>
+
+    <hr>
+
+    <p style="color:var(--muted); font-size:12px; text-align:center; padding-bottom:40px;">
+      MicroCAD · <a href="https://agustin-del-pino.github.io/microcad/">Abrir app</a> ·
+      <a href="https://github.com/agustin-del-pino/microcad">GitHub</a>
+    </p>
+  </main>
+
+</div>
+
+<script>
+  // Highlight active nav link on scroll
+  const headings = document.querySelectorAll('h2[id], div[id]');
+  const navLinks  = document.querySelectorAll('nav a');
+  const observer  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  headings.forEach(h => observer.observe(h));
+</script>
+</body>
+</html>

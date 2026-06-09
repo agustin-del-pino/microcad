@@ -215,6 +215,22 @@
       color: #5a6380;
     }
 
+    .ruler-scale-group select {
+      background: #1a1d23;
+      color: #c8cfe0;
+      border: 1px solid #3a4060;
+      border-radius: 4px;
+      font-size: 11px;
+      padding: 2px 4px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .ruler-scale-group select:hover,
+    .ruler-scale-group select:focus {
+      border-color: #7eb8f7;
+    }
+
     /* zoom controls */
     .zoom-group {
       display: flex;
@@ -805,6 +821,203 @@
       margin-top: 6px;
       min-height: 16px;
     }
+
+    /* ── Project Config Modal ─────────────────────────────────── */
+    .pc-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .62);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s;
+    }
+    .pc-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .pc-panel {
+      background: #1e2230;
+      border: 1px solid #3a4060;
+      border-radius: 12px;
+      width: 440px;
+      max-width: 96vw;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .75);
+      overflow: hidden;
+      transform: translateY(-10px);
+      transition: transform .18s;
+    }
+    .pc-overlay.show .pc-panel {
+      transform: translateY(0);
+    }
+    .pc-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 16px;
+      background: rgba(16, 20, 32, .7);
+      border-bottom: 1px solid #2e3340;
+    }
+    .pc-title {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7eb8f7;
+    }
+    .pc-close-btn {
+      background: none;
+      border: none;
+      color: #5a6a8a;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 3px;
+      border-radius: 4px;
+      transition: color .12s;
+    }
+    .pc-close-btn:hover { color: #f87171; }
+    .pc-body {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .pc-section {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .pc-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #4a5578;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #2a2f42;
+    }
+    .pc-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pc-row label {
+      font-size: 12px;
+      color: #8a93a8;
+      min-width: 160px;
+      flex-shrink: 0;
+    }
+    .pc-row input[type=text],
+    .pc-row select {
+      flex: 1;
+      background: #131825;
+      border: 1px solid #3a4060;
+      border-radius: 5px;
+      color: #c8cfe0;
+      font-size: 12px;
+      padding: 5px 9px;
+      outline: none;
+      font-family: inherit;
+    }
+    .pc-row input[type=text]:focus,
+    .pc-row select:focus { border-color: #7eb8f7; }
+    .pc-row select option { background: #1e2230; }
+    .pc-row input[type=color] {
+      width: 38px;
+      height: 28px;
+      padding: 2px;
+      border: 1px solid #3a4060;
+      border-radius: 5px;
+      background: #131825;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .pc-row input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+    .pc-row input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
+    .pc-color-hint {
+      font-size: 10px;
+      color: #4a5578;
+    }
+    .pc-footer {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding: 11px 18px;
+      border-top: 1px solid #2e3340;
+      background: rgba(16, 20, 32, .4);
+    }
+
+    /* ── AI Chat dropdown ────────────────────────────────────── */
+    #ai-section {
+      border-top: 1px solid #2e3340;
+      padding: 6px 8px;
+      background: rgba(16, 20, 32, .3);
+    }
+    .ai-dropdown-wrap { position: relative; }
+    .ai-dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      padding: 6px 10px;
+      background: rgba(30, 58, 95, .18);
+      border: 1px solid #3a4060;
+      border-radius: 6px;
+      color: #7eb8f7;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .12s, border-color .12s;
+      font-family: inherit;
+      letter-spacing: .02em;
+    }
+    .ai-dropdown-btn:hover { background: rgba(30, 58, 95, .38); border-color: #5a7ab0; }
+    .ai-caret {
+      margin-left: auto;
+      font-size: 9px;
+      opacity: .7;
+      transition: transform .15s;
+    }
+    .ai-dropdown-btn.open .ai-caret { transform: rotate(180deg); }
+    .ai-menu {
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #1e2230;
+      border: 1px solid #3a4060;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, .6);
+      display: none;
+      z-index: 500;
+    }
+    .ai-menu.open { display: block; }
+    .ai-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      font-size: 12px;
+      color: #c8cfe0;
+      cursor: pointer;
+      transition: background .1s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    .ai-option:hover { background: #2a3050; color: #fff; }
+    .ai-option + .ai-option { border-top: 1px solid #252a3a; }
+    .ai-option-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 
@@ -871,6 +1084,63 @@
     </div>
   </div>
 
+  <!-- Project Config Modal -->
+  <div id="project-config-modal" class="pc-overlay">
+    <div class="pc-panel">
+      <div class="pc-header">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7eb8f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span class="pc-title">Configuración del Proyecto</span>
+        <button class="pc-close-btn" id="pcCloseBtn">×</button>
+      </div>
+      <div class="pc-body">
+        <div class="pc-section">
+          <div class="pc-section-title">General</div>
+          <div class="pc-row">
+            <label for="pc-name">Nombre del proyecto</label>
+            <input type="text" id="pc-name" placeholder="Sin nombre" maxlength="80">
+          </div>
+          <div class="pc-row">
+            <label for="pc-unit">Unidad base</label>
+            <select id="pc-unit">
+              <option value="mm">mm — milímetros</option>
+              <option value="cm">cm — centímetros</option>
+              <option value="m">m — metros</option>
+              <option value="km">km — kilómetros</option>
+            </select>
+          </div>
+        </div>
+        <div class="pc-section">
+          <div class="pc-section-title">Canvas</div>
+          <div class="pc-row">
+            <label for="pc-bg-color">Color de fondo</label>
+            <input type="color" id="pc-bg-color" value="#1a1d23">
+          </div>
+          <div class="pc-row">
+            <label for="pc-grid-color">Color de grilla</label>
+            <input type="color" id="pc-grid-color" value="#2d3344">
+          </div>
+        </div>
+        <div class="pc-section">
+          <div class="pc-section-title">Exportación (SVG · PNG · PDF)</div>
+          <div class="pc-row">
+            <label for="pc-export-bg">Color de fondo</label>
+            <input type="color" id="pc-export-bg" value="#ffffff">
+          </div>
+          <div class="pc-row">
+            <label for="pc-export-grid">Color de grilla</label>
+            <input type="color" id="pc-export-grid" value="#d4d4d4">
+          </div>
+        </div>
+      </div>
+      <div class="pc-footer">
+        <button class="ap-btn" id="pcCancelBtn">Cancelar</button>
+        <button class="ap-btn primary" id="pcApplyBtn">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Array Circular panel -->
   <div id="array-panel">
     <h3>
@@ -923,6 +1193,13 @@
           Abrir <kbd>Ctrl+O</kbd>
         </button>
         <input type="file" id="fileInput" accept=".mcad,application/json" style="display:none">
+        <div class="bm-sep"></div>
+        <button class="bm-item" id="projectConfigBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Configuración del proyecto
+        </button>
         <div class="bm-sep"></div>
         <div class="bm-label">Exportar</div>
         <button class="bm-item" id="exportSVG">
@@ -1072,10 +1349,15 @@
           <option value="100">100</option>
         </select>
       </div>
-      <div class="ruler-scale-group" title="Escala: cuántos cm equivale 1 unidad de grilla">
+      <div class="ruler-scale-group" title="Escala: cuántas unidades de la unidad base equivalen a 1 unidad de grilla">
         <label for="rulerScale">1u =</label>
         <input type="number" id="rulerScale" value="1" min="0.001" step="0.1">
-        <span>cm</span>
+        <select id="displayUnitSelect" title="Unidad de visualización (no cambia la escala)">
+          <option value="mm">mm</option>
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+          <option value="km">km</option>
+        </select>
       </div>
     </div>
 
@@ -1155,10 +1437,240 @@
           </svg>
         </button>
       </div>
+      <div id="ai-section">
+        <div class="ai-dropdown-wrap" id="aiDropdownWrap">
+          <button class="ai-dropdown-btn" id="aiDropdownBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Copiar proyecto para LLMs
+            <span class="ai-caret">▾</span>
+          </button>
+          <div class="ai-menu" id="aiMenu"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    // ── AI Strategy base ──────────────────────────────────────────────────
+    class MicrocadAIStrategy {
+      get name()  { throw new Error('implement name'); }
+      get url()   { throw new Error('implement url'); }
+      get color() { return '#7eb8f7'; }
+      get docsUrl() { return 'https://agustin-del-pino.github.io/microcad/docs/'; }
+
+      _schema() {
+        return `# MicroCAD — Esquema del formato .mcad
+> Documentación completa: ${this.docsUrl}
+
+## Estructura JSON raíz
+\`\`\`json
+{
+  "version": 4,
+  "GRID": 20,
+  "unitScale": 1,
+  "cfg": {
+    "projectName": "Mi proyecto",
+    "baseUnit": "mm",
+    "displayUnit": "mm",
+    "bgColor": "#1a1d23",
+    "gridColor": "#2d3344",
+    "exportBgColor": "#ffffff",
+    "exportGridColor": "#d4d4d4"
+  },
+  "layers": [
+    { "id": 1, "name": "Capa 1", "opacity": 1, "visible": true }
+  ],
+  "shapes": [ /* array de shapes */ ]
+}
+\`\`\`
+
+## Sistema de coordenadas
+- Origen (0,0) en el centro del canvas
+- X crece →, Y crece ↓
+- 1 unidad de grilla = unitScale × baseUnit  (ej: unitScale=1, baseUnit="mm" → 1u=1mm)
+- GRID: espaciado de grilla (por defecto 20). Las formas se alinean a múltiplos de GRID.
+
+## Tipos de shapes
+
+### line
+\`\`\`json
+{"type":"line","x1":0,"y1":0,"x2":100,"y2":0,"layerId":1}
+\`\`\`
+
+### rect  (x,y = esquina superior-izquierda)
+\`\`\`json
+{"type":"rect","x":-50,"y":-25,"w":100,"h":50,"layerId":1}
+\`\`\`
+
+### circle
+\`\`\`json
+{"type":"circle","cx":0,"cy":0,"r":50,"layerId":1}
+\`\`\`
+
+### triangle
+\`\`\`json
+{"type":"triangle","p1":{"x":0,"y":-50},"p2":{"x":50,"y":50},"p3":{"x":-50,"y":50},"layerId":1}
+\`\`\`
+
+### arc  (sa/ea en radianes, ccw=antihorario)
+\`\`\`json
+{"type":"arc","cx":0,"cy":0,"r":50,"sa":0,"ea":3.14159,"ccw":false,"layerId":1}
+\`\`\`
+
+### poly  (polilínea o polígono)
+\`\`\`json
+{"type":"poly","pts":[{"x":0,"y":0},{"x":100,"y":0},{"x":50,"y":80}],"closed":true,"layerId":1}
+\`\`\`
+
+### ruler  (igual que line pero renderiza la medida)
+\`\`\`json
+{"type":"ruler","x1":0,"y1":100,"x2":200,"y2":100,"layerId":1}
+\`\`\`
+
+### ground  (línea de apoyo/terreno con sombreado)
+\`\`\`json
+{"type":"ground","x1":-100,"y1":50,"x2":100,"y2":50,"layerId":1}
+\`\`\`
+
+### angledim  (acotación de ángulo: vértice + extremo de cada brazo)
+\`\`\`json
+{"type":"angledim","vx":0,"vy":0,"p1x":100,"p1y":0,"p2x":0,"p2y":-100,"layerId":1}
+\`\`\`
+
+### group
+\`\`\`json
+{"type":"group","children":[/* shapes */],"layerId":1}
+\`\`\``;
+      }
+
+      _currentMcad(app) {
+        return JSON.stringify({
+          version: 4,
+          GRID: app.GRID,
+          unitScale: app.unitScale,
+          cfg: app.cfg.toJSON(),
+          layers: app.layers,
+          shapes: app.shapes,
+        }, null, 2);
+      }
+
+      buildPrompt(app) {
+        return this._schema()
+          + '\n\n'
+          + this._instructions()
+          + '\n\n---\n\n## Proyecto actual (archivo .mcad)\n\n```json\n'
+          + this._currentMcad(app)
+          + '\n```';
+      }
+
+      _instructions() {
+        return `## Instrucciones
+Genera el JSON completo del archivo .mcad según lo que el usuario describa.
+- Centra los dibujos en el origen (0,0) cuando sea posible
+- Incluye siempre "layerId" en cada shape
+- El JSON debe ir dentro de un bloque \`\`\`json ... \`\`\`
+- No agregues propiedades extras fuera del schema`;
+      }
+
+      open(app) {
+        const prompt = this.buildPrompt(app);
+        navigator.clipboard.writeText(prompt).catch(() => {});
+        window.open(this.url, '_blank');
+      }
+    }
+
+    // ── Strategies ────────────────────────────────────────────────────────
+    class ChatGPTStrategy extends MicrocadAIStrategy {
+      get name()  { return 'Chat GPT'; }
+      get url()   { return 'https://chatgpt.com/'; }
+      get color() { return '#10a37f'; }
+
+      _instructions() {
+        return `## Tu rol
+Eres un asistente técnico de diseño CAD. El usuario te describirá figuras o diagramas.
+
+**Reglas estrictas:**
+1. Responde ÚNICAMENTE con el JSON completo dentro de \`\`\`json ... \`\`\`
+2. Sigue el schema exacto — sin propiedades extra, sin omitir campos requeridos
+3. Usa siempre "layerId" coincidente con alguna capa definida en "layers"
+4. Primero el usuario te enviará este contexto; luego pedirá lo que quiere dibujar`;
+      }
+    }
+
+    class GeminiStrategy extends MicrocadAIStrategy {
+      get name()  { return 'Gemini'; }
+      get url()   { return 'https://gemini.google.com/'; }
+      get color() { return '#4285f4'; }
+
+      _instructions() {
+        return `## Tu rol
+Eres un asistente de dibujo técnico. Recibirás descripciones de figuras geométricas o diagramas técnicos.
+
+**Flujo recomendado:**
+1. Interpreta la figura: ¿qué tipos de shapes son necesarios?
+2. Calcula coordenadas centradas en (0,0)
+3. Organiza en capas lógicas si corresponde
+4. Genera el JSON completo
+
+**Formato de respuesta:**
+- Breve descripción de lo que generaste (1-2 líneas)
+- El JSON en bloque \`\`\`json ... \`\`\`
+
+Primero el usuario te enviará el contexto/schema; luego pedirá su dibujo.`;
+      }
+    }
+
+    class ClaudeStrategy extends MicrocadAIStrategy {
+      get name()  { return 'Claude'; }
+      get url()   { return 'https://claude.ai/'; }
+      get color() { return '#d97757'; }
+
+      _instructions() {
+        return `## Tu rol
+Eres un experto en geometría técnica y diseño CAD. Tu tarea es generar archivos .mcad (JSON) para MicroCAD.
+
+**Proceso sugerido:**
+1. **Analiza** la geometría: ¿qué shapes capturan mejor la figura?
+2. **Planifica** las capas: agrupa elementos relacionados
+3. **Calcula** coordenadas con precisión matemática (usa π, √2, etc. donde corresponda)
+4. **Genera** el JSON válido
+
+**Formato de respuesta:**
+- Análisis breve de la geometría (1-3 líneas)
+- JSON completo en \`\`\`json ... \`\`\`
+- Notas sobre decisiones de escala/posición si son relevantes
+
+El usuario primero te envía este contexto; luego describe lo que quiere dibujar.`;
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    class MicrocadProjectConfig {
+      constructor(data = {}) {
+        this.projectName     = data.projectName     ?? 'Sin nombre';
+        this.baseUnit        = data.baseUnit        ?? 'mm';
+        this.displayUnit     = data.displayUnit     ?? data.baseUnit ?? 'mm';
+        this.bgColor         = data.bgColor         ?? '#1a1d23';
+        this.gridColor       = data.gridColor       ?? '#2d3344';
+        this.exportBgColor   = data.exportBgColor   ?? '#ffffff';
+        this.exportGridColor = data.exportGridColor ?? '#d4d4d4';
+      }
+
+      toJSON() {
+        return {
+          projectName: this.projectName,
+          baseUnit: this.baseUnit,
+          displayUnit: this.displayUnit,
+          bgColor: this.bgColor,
+          gridColor: this.gridColor,
+          exportBgColor: this.exportBgColor,
+          exportGridColor: this.exportGridColor,
+        };
+      }
+    }
+
     class MicroCAD {
 
       constructor(cfg = {}) {
@@ -1206,9 +1718,18 @@
         this.arrayPickingCenter  = false;
         this.polyLastClickTime   = 0;
 
+        this.resizingSelected  = false;
+        this.resizeHandle      = null;
+        this.resizeFixedCorner = null;
+        this.resizeOrigBBox    = null;
+        this.resizeSnap        = null;
+
+        this.cfg = new MicrocadProjectConfig();
+
         this.isPanning = false;
         this.panLast = null;
         this.spaceDown = false;
+        this.shiftDown = false;
         this.midPan = false;
 
         this.tbExpanded = false;
@@ -1239,9 +1760,11 @@
         this.draftEl = document.getElementById('draftStatus');
 
         this._bindEvents();
+        this._initAI();
 
         document.getElementById('snapLabel').classList.add('on');
         this.updateHint();
+        this._syncCfgToUI();
         this.resize();
         this.goToOrigin();
         this.renderLayersPanel();
@@ -1316,6 +1839,19 @@
         document.getElementById('rulerScale').addEventListener('input', e => {
           const v = parseFloat(e.target.value);
           if (v > 0) { this.unitScale = v; this.render(); }
+        });
+
+        document.getElementById('displayUnitSelect').addEventListener('change', e => {
+          this.cfg.displayUnit = e.target.value;
+          this.render();
+        });
+
+        document.getElementById('projectConfigBtn').addEventListener('click', () => this.openProjectConfig());
+        document.getElementById('pcCloseBtn').addEventListener('click', () => this.closeProjectConfig());
+        document.getElementById('pcCancelBtn').addEventListener('click', () => this.closeProjectConfig());
+        document.getElementById('pcApplyBtn').addEventListener('click', () => this.applyProjectConfig());
+        document.getElementById('project-config-modal').addEventListener('mousedown', e => {
+          if (e.target === document.getElementById('project-config-modal')) this.closeProjectConfig();
         });
 
 
@@ -1788,9 +2324,7 @@
         });
 
         const dist = len * unitScale;
-        const label = dist < 100
-          ? dist.toFixed(2) + ' cm'
-          : (dist / 100).toFixed(3) + ' m';
+        const label = this._formatMeasure(dist);
 
         const mx = (s.x1 + s.x2) / 2;
         const my = (s.y1 + s.y2) / 2;
@@ -1961,6 +2495,7 @@
         const bb = this.shapeBBox(s);
         const pad = 8 / scale;
         const hs = 5 / scale;
+        const mhs = 3.5 / scale;
         const x = bb.x - pad, y = bb.y - pad;
         const w = bb.w + pad * 2, h = bb.h + pad * 2;
 
@@ -1972,8 +2507,15 @@
         ctx.setLineDash([]);
 
         ctx.fillStyle = '#4a9eff';
+        // Corner resize handles (squares)
         [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].forEach(([hx, hy]) => {
           ctx.fillRect(hx - hs / 2, hy - hs / 2, hs, hs);
+        });
+        // Mid-edge resize handles (circles)
+        [[x + w / 2, y], [x + w, y + h / 2], [x + w / 2, y + h], [x, y + h / 2]].forEach(([hx, hy]) => {
+          ctx.beginPath();
+          ctx.arc(hx, hy, mhs, 0, Math.PI * 2);
+          ctx.fill();
         });
         ctx.restore();
       }
@@ -2009,17 +2551,24 @@
         const m = this.mousePos;
 
         switch (this.currentTool) {
-          case 'line':
+          case 'line': {
             if (!this.dragging) return null;
-            return { type: 'line', x1: this.dragStart.x, y1: this.dragStart.y, x2: m.x, y2: m.y };
+            const le = this.shiftDown ? this._axisLock(this.dragStart, m) : m;
+            return { type: 'line', x1: this.dragStart.x, y1: this.dragStart.y, x2: le.x, y2: le.y };
+          }
 
-          case 'rect':
+          case 'rect': {
             if (!this.dragging) return null;
+            if (this.shiftDown) {
+              const sq = this._squareRect(this.dragStart, m);
+              return { type: 'rect', x: sq.x, y: sq.y, w: sq.w, h: sq.h };
+            }
             return {
               type: 'rect',
               x: Math.min(this.dragStart.x, m.x), y: Math.min(this.dragStart.y, m.y),
               w: Math.abs(m.x - this.dragStart.x), h: Math.abs(m.y - this.dragStart.y),
             };
+          }
 
           case 'circle':
             if (!this.dragging) return null;
@@ -2048,9 +2597,11 @@
             if (this.clicks.length === 0) return null;
             return { type: 'poly', pts: [...this.clicks, m], closed: false };
 
-          case 'ruler':
+          case 'ruler': {
             if (!this.dragging) return null;
-            return { type: 'ruler', x1: this.dragStart.x, y1: this.dragStart.y, x2: m.x, y2: m.y };
+            const re = this.shiftDown ? this._axisLock(this.dragStart, m) : m;
+            return { type: 'ruler', x1: this.dragStart.x, y1: this.dragStart.y, x2: re.x, y2: re.y };
+          }
 
           case 'ground':
             if (!this.dragging) return null;
@@ -2074,9 +2625,10 @@
 
         const minorW = 0.5 / scale;
         const majorW = 1.0 / scale;
+        const [gr, gg, gb] = this._hexToRgb(this.cfg.gridColor);
 
         ctx.beginPath();
-        ctx.strokeStyle = '#252a35';
+        ctx.strokeStyle = `rgba(${gr},${gg},${gb},0.55)`;
         ctx.lineWidth = minorW;
         ctx.setLineDash([]);
         for (let x = x0; x <= x1; x += GRID) { ctx.moveTo(x, vr.top); ctx.lineTo(x, vr.bottom); }
@@ -2087,14 +2639,19 @@
         const mx0 = Math.floor(vr.left / mg) * mg;
         const my0 = Math.floor(vr.top / mg) * mg;
         ctx.beginPath();
-        ctx.strokeStyle = '#2d3344';
+        ctx.strokeStyle = `rgba(${gr},${gg},${gb},0.9)`;
         ctx.lineWidth = majorW;
         for (let x = mx0; x <= x1; x += mg) { ctx.moveTo(x, vr.top); ctx.lineTo(x, vr.bottom); }
         for (let y = my0; y <= y1; y += mg) { ctx.moveTo(vr.left, y); ctx.lineTo(vr.right, y); }
         ctx.stroke();
 
+        // Origin axes: same hue but noticeably brighter
+        const boost = 30;
+        const axR = Math.min(255, gr + boost);
+        const axG = Math.min(255, gg + boost);
+        const axB = Math.min(255, gb + boost);
         ctx.beginPath();
-        ctx.strokeStyle = '#3a4060';
+        ctx.strokeStyle = `rgb(${axR},${axG},${axB})`;
         ctx.lineWidth = majorW * 1.5;
         ctx.moveTo(vr.left, 0); ctx.lineTo(vr.right, 0);
         ctx.moveTo(0, vr.top); ctx.lineTo(0, vr.bottom);
@@ -2152,7 +2709,7 @@
         const W = canvas.width, H = canvas.height;
         ctx.clearRect(0, 0, W, H);
 
-        ctx.fillStyle = '#1a1d23';
+        ctx.fillStyle = this.cfg.bgColor;
         ctx.fillRect(0, 0, W, H);
 
         ctx.save();
@@ -2233,6 +2790,7 @@
 
 
       _onMouseMove(e) {
+        this.shiftDown = e.shiftKey;
         const sc = this.evtScreen(e);
 
         // If no active drag/pan operation, only handle events that originate
@@ -2280,6 +2838,32 @@
           return;
         }
 
+        if (this.resizingSelected && this.resizeFixedCorner) {
+          const snapped = this.evtWorld(e);
+          const fc = this.resizeFixedCorner;
+          const ob = this.resizeOrigBBox;
+          const nb = {
+            x: Math.min(snapped.x, fc.x),
+            y: Math.min(snapped.y, fc.y),
+            w: Math.abs(snapped.x - fc.x),
+            h: Math.abs(snapped.y - fc.y),
+          };
+          // enforce minimum size of half a grid cell
+          if (nb.w >= this.GRID * 0.5 && nb.h >= this.GRID * 0.5) {
+            [...this.selectedSet].forEach(i => {
+              this.shapes[i] = this.scaleShapeInBBox(this.resizeSnap[i], ob, nb);
+            });
+          }
+          const hint = this.resizeHandle === 'tc' || this.resizeHandle === 'bc'
+            ? `Alto: ${this._formatMeasure(nb.h * this.unitScale)}`
+            : this.resizeHandle === 'ml' || this.resizeHandle === 'mr'
+            ? `Ancho: ${this._formatMeasure(nb.w * this.unitScale)}`
+            : `${this._formatMeasure(nb.w * this.unitScale)} × ${this._formatMeasure(nb.h * this.unitScale)}`;
+          this.hint.textContent = hint;
+          this.render();
+          return;
+        }
+
         if (this.movingSelected && this.moveStart) {
           const raw = this.screenToWorld(sc.x, sc.y);
           let dx = raw.x - this.moveStart.x;
@@ -2288,13 +2872,12 @@
             dx = Math.round(dx / this.GRID) * this.GRID;
             dy = Math.round(dy / this.GRID) * this.GRID;
           }
-          if (Math.hypot(dx, dy) >= 1) {
-            this.didMove = true;
-            const snap = this.moveSnap;
-            [...this.selectedSet].forEach(i => {
-              this.shapes[i] = this.offsetShape(snap[i], dx, dy);
-            });
-          }
+          // always update positions so shapes snap back correctly when returning toward origin
+          const snap = this.moveSnap;
+          [...this.selectedSet].forEach(i => {
+            this.shapes[i] = this.offsetShape(snap[i], dx, dy);
+          });
+          if (Math.hypot(dx, dy) >= 0.5) this.didMove = true;
           this.render();
           return;
         }
@@ -2353,7 +2936,40 @@
         }
 
         if (this.currentTool === 'select') {
-          // ── Check rotation handle first ──────────────────────────────────
+          // ── Check resize handles first ───────────────────────────────────
+          if (this.selectedSet.size > 0) {
+            const selBB = this.getSelectionBBox();
+            if (selBB && selBB.w > 1 && selBB.h > 1) {
+              const rawPos = this.screenToWorld(sc.x, sc.y);
+              const pad = 8 / this.scale;
+              const bx = selBB.x - pad, by = selBB.y - pad;
+              const bw = selBB.w + pad * 2, bh = selBB.h + pad * 2;
+              const hitR = 8 / this.scale;
+              const resizeHandles = [
+                { id: 'tl', hx: bx,        hy: by,        fx: selBB.x + selBB.w, fy: selBB.y + selBB.h },
+                { id: 'tr', hx: bx + bw,   hy: by,        fx: selBB.x,            fy: selBB.y + selBB.h },
+                { id: 'bl', hx: bx,        hy: by + bh,   fx: selBB.x + selBB.w, fy: selBB.y            },
+                { id: 'br', hx: bx + bw,   hy: by + bh,   fx: selBB.x,            fy: selBB.y            },
+                { id: 'tc', hx: bx + bw/2, hy: by,        fx: selBB.x + selBB.w/2, fy: selBB.y + selBB.h },
+                { id: 'bc', hx: bx + bw/2, hy: by + bh,   fx: selBB.x + selBB.w/2, fy: selBB.y            },
+                { id: 'ml', hx: bx,        hy: by + bh/2, fx: selBB.x + selBB.w, fy: selBB.y + selBB.h/2 },
+                { id: 'mr', hx: bx + bw,   hy: by + bh/2, fx: selBB.x,            fy: selBB.y + selBB.h/2 },
+              ];
+              for (const rh of resizeHandles) {
+                if (Math.hypot(rawPos.x - rh.hx, rawPos.y - rh.hy) <= hitR) {
+                  this.resizingSelected  = true;
+                  this.resizeHandle      = rh.id;
+                  this.resizeOrigBBox    = { x: selBB.x, y: selBB.y, w: selBB.w, h: selBB.h };
+                  this.resizeFixedCorner = { x: rh.fx, y: rh.fy };
+                  this.resizeSnap        = JSON.parse(JSON.stringify(this.shapes));
+                  this.render();
+                  return;
+                }
+              }
+            }
+          }
+
+          // ── Check rotation handle ────────────────────────────────────────
           if (this.selectedSet.size > 0) {
             const selBB = this.getSelectionBBox();
             if (selBB) {
@@ -2491,6 +3107,18 @@
           return;
         }
 
+        if (this.resizingSelected) {
+          this.resizingSelected  = false;
+          this.resizeHandle      = null;
+          this.resizeFixedCorner = null;
+          this.resizeOrigBBox    = null;
+          this.resizeSnap        = null;
+          this.commit();
+          this.hint.textContent = 'Figura redimensionada · Ctrl+Z=deshacer · Esc=deseleccionar';
+          this.render();
+          return;
+        }
+
         if (this.rotatingSelected) {
           this.rotatingSelected = false;
           if (Math.abs(this.rotateCurrentAngle) > 0.001) {
@@ -2531,29 +3159,39 @@
 
         let s = null;
         switch (this.currentTool) {
-          case 'line':
-            if (Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y) >= this.GRID * 0.4)
-              s = { type: 'line', x1: this.dragStart.x, y1: this.dragStart.y, x2: pos.x, y2: pos.y };
+          case 'line': {
+            const le = this.shiftDown ? this._axisLock(this.dragStart, pos) : pos;
+            if (Math.hypot(le.x - this.dragStart.x, le.y - this.dragStart.y) >= this.GRID * 0.4)
+              s = { type: 'line', x1: this.dragStart.x, y1: this.dragStart.y, x2: le.x, y2: le.y };
             break;
-          case 'rect':
-            if (Math.abs(pos.x - this.dragStart.x) >= this.GRID * 0.4 &&
-              Math.abs(pos.y - this.dragStart.y) >= this.GRID * 0.4)
+          }
+          case 'rect': {
+            if (this.shiftDown) {
+              const sq = this._squareRect(this.dragStart, pos);
+              if (sq.w >= this.GRID * 0.4)
+                s = { type: 'rect', x: sq.x, y: sq.y, w: sq.w, h: sq.h };
+            } else if (Math.abs(pos.x - this.dragStart.x) >= this.GRID * 0.4 &&
+                       Math.abs(pos.y - this.dragStart.y) >= this.GRID * 0.4) {
               s = {
                 type: 'rect',
                 x: Math.min(this.dragStart.x, pos.x), y: Math.min(this.dragStart.y, pos.y),
                 w: Math.abs(pos.x - this.dragStart.x), h: Math.abs(pos.y - this.dragStart.y)
               };
+            }
             break;
+          }
           case 'circle': {
             const r = Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y);
             if (r >= this.GRID * 0.4)
               s = { type: 'circle', cx: this.dragStart.x, cy: this.dragStart.y, r };
             break;
           }
-          case 'ruler':
-            if (Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y) >= this.GRID * 0.4)
-              s = { type: 'ruler', x1: this.dragStart.x, y1: this.dragStart.y, x2: pos.x, y2: pos.y };
+          case 'ruler': {
+            const re = this.shiftDown ? this._axisLock(this.dragStart, pos) : pos;
+            if (Math.hypot(re.x - this.dragStart.x, re.y - this.dragStart.y) >= this.GRID * 0.4)
+              s = { type: 'ruler', x1: this.dragStart.x, y1: this.dragStart.y, x2: re.x, y2: re.y };
             break;
+          }
           case 'ground':
             if (Math.hypot(pos.x - this.dragStart.x, pos.y - this.dragStart.y) >= this.GRID * 0.4)
               s = { type: 'ground', x1: this.dragStart.x, y1: this.dragStart.y, x2: pos.x, y2: pos.y };
@@ -2667,6 +3305,96 @@
           }
         }
         return ns;
+      }
+
+      // ── Scale shape to fit a new bounding box ──────────────────────────
+      scaleShapeInBBox(s, ob, nb) {
+        // ob / nb = {x, y, w, h} original / new bounding box
+        const sx = ob.w > 0.01 ? nb.w / ob.w : 1;
+        const sy = ob.h > 0.01 ? nb.h / ob.h : 1;
+        const mapX = x => ob.w > 0.01 ? nb.x + (x - ob.x) * sx : x + (nb.x - ob.x);
+        const mapY = y => ob.h > 0.01 ? nb.y + (y - ob.y) * sy : y + (nb.y - ob.y);
+        const ns = JSON.parse(JSON.stringify(s));
+        switch (s.type) {
+          case 'line': case 'ruler': case 'ground':
+            ns.x1 = mapX(s.x1); ns.y1 = mapY(s.y1);
+            ns.x2 = mapX(s.x2); ns.y2 = mapY(s.y2);
+            break;
+          case 'rect':
+            ns.x = mapX(s.x); ns.y = mapY(s.y);
+            ns.w = s.w * sx; ns.h = s.h * sy;
+            break;
+          case 'circle': {
+            ns.cx = mapX(s.cx); ns.cy = mapY(s.cy);
+            ns.r  = s.r * Math.max(sx, sy);
+            break;
+          }
+          case 'arc': {
+            ns.cx = mapX(s.cx); ns.cy = mapY(s.cy);
+            ns.r  = s.r * Math.max(sx, sy);
+            break;
+          }
+          case 'triangle':
+            ns.p1 = { x: mapX(s.p1.x), y: mapY(s.p1.y) };
+            ns.p2 = { x: mapX(s.p2.x), y: mapY(s.p2.y) };
+            ns.p3 = { x: mapX(s.p3.x), y: mapY(s.p3.y) };
+            break;
+          case 'poly':
+            ns.pts = s.pts.map(p => ({ x: mapX(p.x), y: mapY(p.y) }));
+            break;
+          case 'angledim':
+            ns.vx  = mapX(s.vx);  ns.vy  = mapY(s.vy);
+            ns.p1x = mapX(s.p1x); ns.p1y = mapY(s.p1y);
+            ns.p2x = mapX(s.p2x); ns.p2y = mapY(s.p2y);
+            break;
+          case 'group':
+            ns.children = s.children.map(c => this.scaleShapeInBBox(c, ob, nb));
+            break;
+        }
+        return ns;
+      }
+
+      _axisLock(start, end) {
+        const dx = end.x - start.x, dy = end.y - start.y;
+        return Math.abs(dx) >= Math.abs(dy)
+          ? { x: end.x, y: start.y }
+          : { x: start.x, y: end.y };
+      }
+
+      _squareRect(start, end) {
+        const dx = end.x - start.x, dy = end.y - start.y;
+        const size = Math.min(Math.abs(dx), Math.abs(dy));
+        return {
+          x: Math.min(start.x, start.x + Math.sign(dx) * size),
+          y: Math.min(start.y, start.y + Math.sign(dy) * size),
+          w: size, h: size,
+        };
+      }
+
+      _unitConversionFactor(from, to) {
+        const toMm = { mm: 1, cm: 10, m: 1000, km: 1e6 };
+        return (toMm[from] ?? 1) / (toMm[to] ?? 1);
+      }
+
+      _formatMeasure(distInBase) {
+        const factor = this._unitConversionFactor(this.cfg.baseUnit, this.cfg.displayUnit);
+        const dist   = distInBase * factor;
+        switch (this.cfg.displayUnit) {
+          case 'mm': return dist.toFixed(1) + ' mm';
+          case 'cm': return dist.toFixed(2) + ' cm';
+          case 'm':  return dist.toFixed(3) + ' m';
+          case 'km': return dist.toFixed(5) + ' km';
+          default:   return dist.toFixed(2) + ' ' + this.cfg.displayUnit;
+        }
+      }
+
+      _hexToRgb(hex) {
+        const h = hex.replace('#', '');
+        return [
+          parseInt(h.slice(0, 2), 16),
+          parseInt(h.slice(2, 4), 16),
+          parseInt(h.slice(4, 6), 16),
+        ];
       }
 
       // ── Array Circular ──────────────────────────────────────────────────
@@ -2937,7 +3665,7 @@
         if (this.selectedSet.size < 2) return;
         const sorted = [...this.selectedSet].sort((a, b) => a - b);
         const children = sorted.map(i => ({ ...this.shapes[i] }));
-        const group = { type: 'group', children };
+        const group = { type: 'group', children, layerId: this.activeLayerId };
         const insertAt = sorted[0];
         [...sorted].reverse().forEach(i => this.shapes.splice(i, 1));
         this.shapes.splice(insertAt, 0, group);
@@ -3168,6 +3896,11 @@
         this.rotateCenter      = null;
         this.rotateSnap        = null;
         this.rotateCurrentAngle = 0;
+        this.resizingSelected  = false;
+        this.resizeHandle      = null;
+        this.resizeFixedCorner = null;
+        this.resizeOrigBBox    = null;
+        this.resizeSnap        = null;
         this.updateHint(); this.render();
       }
 
@@ -3193,6 +3926,23 @@
           e.preventDefault();
           this.spaceDown = true;
           this.updateCursor();
+          return;
+        }
+
+        if (e.key === 'Shift' && !e.repeat) { this.shiftDown = true; this.render(); return; }
+
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)) {
+          if (this.currentTool === 'select' && this.selectedSet.size > 0) {
+            e.preventDefault();
+            const step = e.shiftKey ? 10 : 1;
+            const dx = key === 'ArrowLeft' ? -step : key === 'ArrowRight' ? step : 0;
+            const dy = key === 'ArrowUp'   ? -step : key === 'ArrowDown'  ? step : 0;
+            [...this.selectedSet].forEach(i => {
+              this.shapes[i] = this.offsetShape(this.shapes[i], dx, dy);
+            });
+            this.commit();
+            this.render();
+          }
           return;
         }
 
@@ -3278,6 +4028,7 @@
           }
           this.updateCursor();
         }
+        if (e.key === 'Shift') { this.shiftDown = false; this.render(); }
       }
 
 
@@ -3373,7 +4124,7 @@
 
         const lines = [
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${this.r2(vx)} ${this.r2(vy)} ${this.r2(vw)} ${this.r2(vh)}" width="${this.r2(vw)}" height="${this.r2(vh)}">`,
-          `<rect x="${this.r2(vx)}" y="${this.r2(vy)}" width="${this.r2(vw)}" height="${this.r2(vh)}" fill="white"/>`,
+          `<rect x="${this.r2(vx)}" y="${this.r2(vy)}" width="${this.r2(vw)}" height="${this.r2(vh)}" fill="${this.cfg.exportBgColor}"/>`,
         ];
 
         const mg = this.GRID * this.GRID_MAJOR;
@@ -3388,8 +4139,8 @@
           const seg = `<line x1="${this.r2(vx)}" y1="${this.r2(y)}" x2="${this.r2(vx + vw)}" y2="${this.r2(y)}"/>`;
           if (y % mg === 0) major += seg; else minor += seg;
         }
-        lines.push(`<g fill="none" stroke="#ebebeb" stroke-width="0.5">${minor}</g>`);
-        lines.push(`<g fill="none" stroke="#d4d4d4" stroke-width="1">${major}</g>`);
+        lines.push(`<g fill="none" stroke="${this.cfg.exportGridColor}" stroke-width="0.5" stroke-opacity="0.6">${minor}</g>`);
+        lines.push(`<g fill="none" stroke="${this.cfg.exportGridColor}" stroke-width="1">${major}</g>`);
 
         this.shapes.forEach(s => { const el = this.shapeToSVGEl(s); if (el) lines.push(el); });
         lines.push('</svg>');
@@ -3455,7 +4206,7 @@
             if (len < 1) return '';
             const ux = dx / len, uy = dy / len, px = -uy, py = ux, tH = 8;
             const dist = len * this.unitScale;
-            const label = dist < 100 ? dist.toFixed(2) + ' cm' : (dist / 100).toFixed(3) + ' m';
+            const label = this._formatMeasure(dist);
             const mx = (s.x1 + s.x2) / 2, my = (s.y1 + s.y2) / 2;
             const lx = mx + px * (tH * 2 + 4), ly = my + py * (tH * 2 + 4);
             const col = '#b08800';
@@ -3533,10 +4284,12 @@
 
       doSave() {
         const data = {
-          version: 2, GRID: this.GRID, unitScale: this.unitScale,
+          version: 4, GRID: this.GRID, unitScale: this.unitScale,
+          cfg: this.cfg.toJSON(),
           layers: this.layers, shapes: this.shapes
         };
-        this.dlBlob('microcad.mcad', 'application/json', JSON.stringify(data, null, 2));
+        const fname = (this.cfg.projectName || 'microcad').replace(/[^a-zA-Z0-9_\-\. ]/g, '_');
+        this.dlBlob(`${fname}.mcad`, 'application/json', JSON.stringify(data, null, 2));
       }
 
       doOpen() {
@@ -3553,6 +4306,13 @@
             this.shapes = (data.shapes || []);
             if (data.GRID) { this.GRID = data.GRID; document.getElementById('gridSize').value = this.GRID; }
             if (data.unitScale) { this.unitScale = data.unitScale; document.getElementById('rulerScale').value = this.unitScale; }
+            if (data.cfg) {
+              this.cfg = new MicrocadProjectConfig(data.cfg);
+            } else if (data.displayUnit) {
+              // backward compat: old files had displayUnit at root level
+              this.cfg = new MicrocadProjectConfig({ baseUnit: data.displayUnit });
+            }
+            this._syncCfgToUI();
             if (data.layers && data.layers.length) {
               this.layers = data.layers;
               this.nextLayerId = Math.max(...this.layers.map(l => l.id)) + 1;
@@ -3573,6 +4333,43 @@
         e.target.value = '';
       }
 
+      // ── Project Config Modal ──────────────────────────────────────────────
+      openProjectConfig() {
+        const c = this.cfg;
+        document.getElementById('pc-name').value       = c.projectName;
+        document.getElementById('pc-unit').value       = c.baseUnit;
+        document.getElementById('pc-bg-color').value   = c.bgColor;
+        document.getElementById('pc-grid-color').value = c.gridColor;
+        document.getElementById('pc-export-bg').value   = c.exportBgColor;
+        document.getElementById('pc-export-grid').value = c.exportGridColor;
+        document.getElementById('project-config-modal').classList.add('show');
+      }
+
+      closeProjectConfig() {
+        document.getElementById('project-config-modal').classList.remove('show');
+      }
+
+      applyProjectConfig() {
+        const prevBase           = this.cfg.baseUnit;
+        this.cfg.projectName     = document.getElementById('pc-name').value.trim() || 'Sin nombre';
+        this.cfg.baseUnit        = document.getElementById('pc-unit').value;
+        // Si la unidad de visualización coincidía con la base anterior, la sincronizamos con la nueva
+        if (this.cfg.displayUnit === prevBase) this.cfg.displayUnit = this.cfg.baseUnit;
+        this.cfg.bgColor         = document.getElementById('pc-bg-color').value;
+        this.cfg.gridColor       = document.getElementById('pc-grid-color').value;
+        this.cfg.exportBgColor   = document.getElementById('pc-export-bg').value;
+        this.cfg.exportGridColor = document.getElementById('pc-export-grid').value;
+        this._syncCfgToUI();
+        this.closeProjectConfig();
+        this.render();
+      }
+
+      _syncCfgToUI() {
+        document.getElementById('displayUnitSelect').value = this.cfg.displayUnit;
+        document.title = `MicroCAD — ${this.cfg.projectName}`;
+      }
+
+      // ─────────────────────────────────────────────────────────────────────
       async doExportSVG() {
         this.dlBlob('microcad.svg', 'image/svg+xml', this.buildSVGString());
       }
@@ -3610,20 +4407,25 @@
 
         const pdf = new jsPDF({ orientation: pw >= ph ? 'l' : 'p', unit: 'pt', format: [pw, ph] });
 
-        // White background
-        pdf.setFillColor(255, 255, 255);
+        // Background
+        const [bgR, bgG, bgB] = this._hexToRgb(this.cfg.exportBgColor);
+        pdf.setFillColor(bgR, bgG, bgB);
         pdf.rect(0, 0, pw, ph, 'F');
 
         // Grid lines (only if visible)
         if (this.gridVisible) {
           const { GRID, GRID_MAJOR } = this;
+          const [egR, egG, egB] = this._hexToRgb(this.cfg.exportGridColor);
           const x0 = Math.floor(bbox.minX / GRID) * GRID;
           const y0 = Math.floor(bbox.minY / GRID) * GRID;
           const x1 = Math.ceil(bbox.maxX / GRID) * GRID;
           const y1 = Math.ceil(bbox.maxY / GRID) * GRID;
 
-          // minor grid
-          pdf.setDrawColor(220, 220, 220);
+          // minor grid (60% opacity approximation via color blend with bg)
+          const mr = Math.round(bgR * 0.4 + egR * 0.6);
+          const mg2 = Math.round(bgG * 0.4 + egG * 0.6);
+          const mb = Math.round(bgB * 0.4 + egB * 0.6);
+          pdf.setDrawColor(mr, mg2, mb);
           pdf.setLineWidth(0.15);
           for (let gx = x0; gx <= x1; gx += GRID) {
             if ((Math.round(gx / GRID) % GRID_MAJOR) === 0) continue;
@@ -3634,7 +4436,7 @@
             pdf.line(tx(bbox.minX - m * 0.5), ty(gy), tx(bbox.maxX + m * 0.5), ty(gy));
           }
           // major grid
-          pdf.setDrawColor(190, 190, 190);
+          pdf.setDrawColor(egR, egG, egB);
           pdf.setLineWidth(0.35);
           for (let gx = x0; gx <= x1; gx += GRID) {
             if ((Math.round(gx / GRID) % GRID_MAJOR) !== 0) continue;
@@ -3786,9 +4588,7 @@
             });
 
             const dist = len * this.unitScale;
-            const label = dist < 100
-              ? dist.toFixed(2) + ' cm'
-              : (dist / 100).toFixed(3) + ' m';
+            const label = this._formatMeasure(dist);
 
             const mx = (s.x1 + s.x2) / 2;
             const my = (s.y1 + s.y2) / 2;
@@ -3858,7 +4658,8 @@
       saveDraft() {
         try {
           localStorage.setItem(this.DRAFT_KEY, JSON.stringify({
-            version: 2, GRID: this.GRID, unitScale: this.unitScale,
+            version: 4, GRID: this.GRID, unitScale: this.unitScale,
+            cfg: this.cfg.toJSON(),
             layers: this.layers, shapes: this.shapes,
           }));
           this.draftEl.textContent = '● borrador guardado';
@@ -3878,6 +4679,12 @@
           this.shapes = data.shapes;
           if (data.GRID) { this.GRID = data.GRID; document.getElementById('gridSize').value = this.GRID; }
           if (data.unitScale) { this.unitScale = data.unitScale; document.getElementById('rulerScale').value = this.unitScale; }
+          if (data.cfg) {
+            this.cfg = new MicrocadProjectConfig(data.cfg);
+          } else if (data.displayUnit) {
+            this.cfg = new MicrocadProjectConfig({ baseUnit: data.displayUnit });
+          }
+          this._syncCfgToUI();
           if (data.layers && data.layers.length) {
             this.layers = data.layers;
             this.nextLayerId = Math.max(...this.layers.map(l => l.id)) + 1;
@@ -3891,6 +4698,49 @@
           this.histIdx = 0;
           this.commit(); this.renderLayersPanel(); this.cancelOp();
         } catch (e) { }
+      }
+
+      // ── AI Chat integration ───────────────────────────────────────────────
+      _initAI() {
+        this._aiStrategies = [
+          new ChatGPTStrategy(),
+          new GeminiStrategy(),
+          new ClaudeStrategy(),
+        ];
+
+        const menu = document.getElementById('aiMenu');
+        this._aiStrategies.forEach(strategy => {
+          const btn = document.createElement('button');
+          btn.className = 'ai-option';
+          btn.innerHTML = `
+            <span class="ai-option-dot" style="background:${strategy.color}"></span>
+            ${strategy.name}
+          `;
+          btn.addEventListener('click', () => {
+            this._selectAIStrategy(strategy);
+            this._toggleAIMenu(false);
+          });
+          menu.appendChild(btn);
+        });
+
+        document.getElementById('aiDropdownBtn').addEventListener('click', e => {
+          e.stopPropagation();
+          this._toggleAIMenu();
+        });
+
+        document.addEventListener('click', () => this._toggleAIMenu(false));
+      }
+
+      _toggleAIMenu(force) {
+        const menu = document.getElementById('aiMenu');
+        const btn  = document.getElementById('aiDropdownBtn');
+        const open = force !== undefined ? force : !menu.classList.contains('open');
+        menu.classList.toggle('open', open);
+        btn.classList.toggle('open', open);
+      }
+
+      _selectAIStrategy(strategy) {
+        strategy.open(this);
       }
     }
 

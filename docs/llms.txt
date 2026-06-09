@@ -1,0 +1,86 @@
+# MicroCAD — LLM Context
+
+> MicroCAD is a lightweight browser-based 2D CAD application.
+> Live app: https://agustin-del-pino.github.io/microcad/
+> Documentation: https://agustin-del-pino.github.io/microcad/docs/
+
+## What you can do with this documentation
+
+Read https://agustin-del-pino.github.io/microcad/docs/ to understand the .mcad file format
+and generate valid CAD drawings by producing a JSON file the user can open in MicroCAD.
+
+## .mcad file format (summary)
+
+A .mcad file is JSON with the following root structure:
+
+```json
+{
+  "version": 4,
+  "GRID": 20,
+  "unitScale": 1,
+  "cfg": {
+    "projectName": "string",
+    "baseUnit": "mm|cm|m|km",
+    "displayUnit": "mm|cm|m|km",
+    "bgColor": "#hex",
+    "gridColor": "#hex",
+    "exportBgColor": "#hex",
+    "exportGridColor": "#hex"
+  },
+  "layers": [
+    { "id": 1, "name": "string", "opacity": 1, "visible": true }
+  ],
+  "shapes": [ /* see shape types below */ ]
+}
+```
+
+## Coordinate system
+
+- Origin (0,0) at canvas center
+- X grows right, Y grows down
+- 1 canvas unit = unitScale × baseUnit (e.g. unitScale=1, baseUnit="mm" → 1u = 1mm)
+- GRID = snap grid spacing (default 20). Use multiples of GRID for aligned shapes.
+
+## Shape types
+
+Every shape requires a "layerId" matching an existing layer id.
+
+### line
+{"type":"line","x1":0,"y1":0,"x2":100,"y2":0,"layerId":1}
+
+### rect  (x,y = top-left corner)
+{"type":"rect","x":-50,"y":-25,"w":100,"h":50,"layerId":1}
+
+### circle
+{"type":"circle","cx":0,"cy":0,"r":50,"layerId":1}
+
+### triangle
+{"type":"triangle","p1":{"x":0,"y":-50},"p2":{"x":50,"y":50},"p3":{"x":-50,"y":50},"layerId":1}
+
+### arc  (angles in radians; ccw=true for counter-clockwise)
+{"type":"arc","cx":0,"cy":0,"r":50,"sa":0,"ea":3.14159,"ccw":false,"layerId":1}
+Angle reference: 0=right, π/2=down, π=left, 3π/2=up
+
+### poly  (polyline or polygon)
+{"type":"poly","pts":[{"x":0,"y":0},{"x":100,"y":0},{"x":50,"y":80}],"closed":true,"layerId":1}
+
+### ruler  (same as line but renders the measured distance as a label)
+{"type":"ruler","x1":0,"y1":100,"x2":200,"y2":100,"layerId":1}
+
+### ground  (support/ground line symbol used in engineering)
+{"type":"ground","x1":-100,"y1":50,"x2":100,"y2":50,"layerId":1}
+
+### angledim  (angle dimension: vertex + two arm endpoints)
+{"type":"angledim","vx":0,"vy":0,"p1x":100,"p1y":0,"p2x":0,"p2y":-100,"layerId":1}
+
+### group  (nested shapes)
+{"type":"group","children":[/* shapes */],"layerId":1}
+
+## Instructions for generating a .mcad file
+
+1. Center drawings around the origin (0,0) when possible.
+2. Always include "layerId" in every shape, matching a layer defined in "layers".
+3. Use multiples of GRID for dimensions and positions (default GRID=20).
+4. Output the complete JSON inside a ```json ... ``` code block.
+5. Valid JSON only — no comments inside the final JSON.
+6. The user will save your output as a .mcad file and open it with MicroCAD → Open.
